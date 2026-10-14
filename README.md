@@ -2,49 +2,58 @@
 
 | Klasör | Ne |
 |---|---|
-| `site/` | Web sitesi (Astro, sunucu modunda). Google Cloud Run'da çalışır. |
-| `studio/` | Yönetim paneli (Sanity Studio). `gencliginyuzleri.sanity.studio` adresinde yayınlanır. |
-| `seed/` | sosyaliklim.org'dan taşınan ilk içeriği Sanity'ye aktaran betik. |
+| `site/` | Web sitesi (Astro). Cloud Run servisi `gencligin-yuzleri`. |
+| `cms/` | Yönetim paneli (Payload CMS, açık kaynak). Cloud Run servisi `gencligin-yuzleri-panel`. |
 
-Site içeriği her istekte Sanity'den okunur (60 sn önbellek). Panelden yayınlanan bir değişiklik
-en geç bir dakika içinde sitede görünür; yeniden derleme gerekmez.
-`SANITY_PROJECT_ID` tanımlı değilse site `site/src/data/seed.json` içeriğiyle çalışır.
+Her şey Google Cloud projesi `gencligin-yuzleri` içinde, bölge `europe-west1`:
 
-Node 24 gerekir (`.nvmrc`).
+- **Veritabanı:** Cloud SQL Postgres 16, instance `gy-db`, veritabanı `payload` (günlük yedek 03:00)
+- **Dosyalar:** Cloud Storage bucket `gencligin-yuzleri-dosyalar` (herkese açık okuma)
+- **Gizli bilgiler:** Secret Manager → `cms-database-url`, `cms-payload-secret`
+- **Panel servis hesabı:** `gy-cms@gencligin-yuzleri.iam.gserviceaccount.com`
 
-## Yerelde çalıştırma
+Geçici adresler:
+- Site: https://gencligin-yuzleri-145244747694.europe-west1.run.app
+- Panel: https://gencligin-yuzleri-panel-145244747694.europe-west1.run.app/admin
 
-```bash
-cd site && npm install && npm run dev      # http://localhost:4321
-cd studio && npm install && npm run dev    # http://localhost:3333
-```
+Site içeriği panelin REST API'sinden okur (60 sn önbellek). Panelde "Yayınla" denen
+içerik en geç bir dakikada sitede görünür. `CMS_URL` tanımlı değilse site
+`site/src/data/seed.json` ile çalışır.
 
-## İlk kurulum (bir kez)
+## Panel
 
-1. **Sanity projesi:** `cd studio && npx sanity login`, sonra `npx sanity projects create "Gençliğin Yüzleri"`.
-   Çıkan proje kimliğini `studio/.env` dosyasına `SANITY_STUDIO_PROJECT_ID=...` olarak yazın.
-   `npx sanity dataset create production --visibility public`
-2. **İçeriği aktar:** `cd studio && npm run import-seed` (PDF'ler ve fotoğraflar dahil).
-3. **Paneli yayınla:** `cd studio && npm run deploy` → https://gencliginyuzleri.sanity.studio
-4. **CORS:** `npx sanity cors add https://gencliginyuzleri.org`
-5. **Kullanıcılar:** sanity.io/manage → proje → Members üzerinden davet edilir.
-   İçerik ekibine **Editor** rolü yeterli.
+- **Duyurular:** taslak / yayın akışı, kapak görseli, zengin metin
+- **Politika Belgeleri:** PDF yükleme, kapak, dönem, sıra
+- **Dönemler:** açıklama, şehirler, faaliyet kartları, öne çıkan çıktı
+- **Görseller:** tüm fotoğraflar (otomatik webp ve boyutlandırma)
+- **Site Ayarları:** slogan, giriş fotoğrafları, sayaçlar, hakkımızda, iletişim
+- **Kullanıcılar:** yalnızca Yönetici rolü görür; kullanıcı ekler/siler. Editör sadece içerik girer.
 
-## Yayına alma (Google Cloud Run)
-
-GCP projesi: `gencligin-yuzleri` (bölge `europe-west1`, servis `gencligin-yuzleri`).
-Geçici adres: https://gencligin-yuzleri-145244747694.europe-west1.run.app
+## Yerelde çalıştırma (Node 24)
 
 ```bash
-cd site && ./deploy.sh gencligin-yuzleri <sanity-proje-id>
+# Postgres: createdb gencligin_yuzleri
+cd cms && cp .env.example .env && npm install && npm run dev   # http://localhost:3001/admin
+npm run seed                                                    # ilk içerik
+cd site && CMS_URL=http://localhost:3001 npm run dev            # http://localhost:4321
 ```
 
-Alan adı: Cloud Run → Domain mappings → `gencliginyuzleri.org` ve `www` eklenir;
-verilen DNS kayıtları alan adı yöneticisine girilir. SSL sertifikası otomatik gelir.
+## Şema değişikliği (alan ekleme vb.)
 
-## Panelde ne var?
+```bash
+cd cms && npm run migrate:create -- kisa_aciklama   # migration'ı her zaman bu komutla üretin
+```
+Oluşan dosyayı commit'leyin; panel deploy edildiğinde açılışta otomatik uygulanır.
 
-- **Site Ayarları:** slogan, giriş fotoğrafları, sayaçlar, hakkımızda metni, iletişim, sosyal medya
-- **Duyurular:** başlık, tarih, kategori, kapak görseli, zengin metin
-- **Politika Belgeleri:** PDF yükleme, kapak görseli, dönem ve sıra
-- **Dönemler:** dönem açıklaması, şehirler, faaliyet kartları, öne çıkan çıktı
+## Deploy
+
+```bash
+cd cms && gcloud run deploy gencligin-yuzleri-panel --project gencligin-yuzleri --region europe-west1 --source .
+cd site && ./deploy.sh gencligin-yuzleri https://<panel-adresi>
+```
+
+## Üretim veritabanına yerelden bağlanma
+
+```bash
+cloud-sql-proxy --token "$(gcloud auth print-access-token)" --port 5545 gencligin-yuzleri:europe-west1:gy-db
+```
