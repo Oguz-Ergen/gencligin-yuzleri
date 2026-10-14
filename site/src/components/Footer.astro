@@ -1,0 +1,78 @@
+---
+import type { Settings } from '../lib/content';
+
+interface Props { settings: Settings }
+const { settings } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="wrap grid">
+    <div class="org">
+      <a href="https://sosyaliklim.org" target="_blank" rel="noopener" class="org-logo">
+        <img src="/arsiv/gorseller/sosyal-iklim-logo-beyaz.png" alt="Sosyal İklim Derneği" width="96" height="96" loading="lazy" />
+      </a>
+      <p>Gençliğin Yüzleri, <a href="https://sosyaliklim.org" target="_blank" rel="noopener">Sosyal İklim Derneği</a> tarafından yürütülen bir gençlik programıdır.</p>
+    </div>
+
+    <div>
+      <h2 class="h">İletişim</h2>
+      {settings.email && <p><a href={`mailto:${settings.email}`}>{settings.email}</a></p>}
+      {settings.address && <p>{settings.address}</p>}
+    </div>
+
+    <div>
+      <h2 class="h">Keşfet</h2>
+      <ul>
+        <li><a href="/belgeler">Politika Belgeleri</a></li>
+        <li><a href="/duyurular">Duyurular</a></li>
+        {settings.volunteerUrl && <li><a href={settings.volunteerUrl} target="_blank" rel="noopener">Gönüllü Ol</a></li>}
+        {settings.social.map((s) => (
+          <li><a href={s.url} target="_blank" rel="noopener">{s.platform}</a></li>
+        ))}
+      </ul>
+    </div>
+  </div>
+  <div class="wrap bottom">
+    <span>© {year} Sosyal İklim Derneği</span>
+    <span>#ŞimdiSözGençlikte</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--ink);
+    color: #d9dcec;
+    padding: 72px 0 28px;
+    font-size: 0.95rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 40px;
+  }
+  .org-logo img { width: 72px; height: 72px; margin-bottom: 16px; }
+  .org p { max-width: 38ch; }
+  .h {
+    font-size: 1.1rem;
+    color: #fff;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+  ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  a { color: #fff; text-underline-offset: 3px; }
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 56px;
+    padding-top: 22px;
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+    font-size: 0.85rem;
+    color: #a3a8c3;
+  }
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr; gap: 32px; }
+  }
+</style>

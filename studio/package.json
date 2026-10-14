@@ -1,0 +1,27 @@
+{
+  "name": "gencligin-yuzleri-studio",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "import-seed": "node ../seed/build-ndjson.mjs && sanity dataset import ../seed/data.ndjson production --replace"
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@sanity/icons": "^5.2.3",
+    "@sanity/locale-tr-tr": "^1.2.38",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "sanity": "^6.18.0",
+    "styled-components": "^6.6.0"
+  }
+}

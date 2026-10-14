@@ -1,0 +1,112 @@
+---
+const links = [
+  { href: '/#hakkimizda', label: 'Hakkımızda' },
+  { href: '/#donemler', label: 'Dönemler' },
+  { href: '/belgeler', label: 'Politika Belgeleri' },
+  { href: '/duyurular', label: 'Duyurular' },
+  { href: '/#iletisim', label: 'İletişim' },
+];
+const path = Astro.url.pathname;
+---
+
+<header class="header">
+  <div class="wrap bar">
+    <a href="/" class="logo" aria-label="Gençliğin Yüzleri ana sayfa">
+      <img src="/arsiv/gorseller/gy-logo.png" alt="Gençliğin Yüzleri" width="449" height="281" />
+    </a>
+
+    <nav aria-label="Ana menü" class="nav-desktop">
+      <ul>
+        {links.map((l) => (
+          <li><a href={l.href} aria-current={path === l.href ? 'page' : undefined}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <details class="nav-mobile">
+      <summary aria-label="Menüyü aç">
+        <span></span><span></span><span></span>
+      </summary>
+      <nav aria-label="Mobil menü">
+        <ul>
+          {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<script>
+  // Mobil menüde bir bağlantıya tıklanınca menüyü kapat.
+  document.querySelectorAll<HTMLAnchorElement>('.nav-mobile a').forEach((a) =>
+    a.addEventListener('click', () => a.closest('details')?.removeAttribute('open')),
+  );
+</script>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--cream) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+  }
+  .logo img { height: 52px; width: auto; }
+
+  ul { list-style: none; margin: 0; padding: 0; }
+  .nav-desktop ul { display: flex; gap: clamp(14px, 2.4vw, 32px); }
+  .nav-desktop a {
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 6px 0;
+    border-bottom: 2px solid transparent;
+  }
+  .nav-desktop a:hover,
+  .nav-desktop a[aria-current='page'] { border-color: var(--orange); }
+
+  .nav-mobile { display: none; position: relative; }
+  .nav-mobile summary {
+    list-style: none;
+    cursor: pointer;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-content: center;
+    gap: 5px;
+  }
+  .nav-mobile summary::-webkit-details-marker { display: none; }
+  .nav-mobile summary span { display: block; width: 24px; height: 2px; background: var(--ink); border-radius: 2px; }
+  .nav-mobile nav {
+    position: absolute;
+    right: 0;
+    top: 52px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgb(29 34 64 / 0.15);
+    padding: 8px;
+    min-width: 220px;
+  }
+  .nav-mobile a {
+    display: block;
+    padding: 12px 14px;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 8px;
+  }
+  .nav-mobile a:hover { background: var(--cream); }
+
+  @media (max-width: 860px) {
+    .nav-desktop { display: none; }
+    .nav-mobile { display: block; }
+    .logo img { height: 44px; }
+  }
+</style>

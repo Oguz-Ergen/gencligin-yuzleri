@@ -1,0 +1,66 @@
+---
+import type { Belge } from '../lib/content';
+
+interface Props { belge: Belge }
+const { belge } = Astro.props;
+---
+
+<a class="doc" href={belge.fileUrl} target="_blank" rel="noopener">
+  <div class="cover">
+    {belge.cover
+      ? <img src={belge.cover.url(480)} alt="" loading="lazy" width="396" height="560" />
+      : <span class="placeholder">PDF</span>}
+  </div>
+  <div class="meta">
+    {belge.label && <span class="label">{belge.label}</span>}
+    <span class="title">{belge.title}</span>
+    <span class="dl">PDF'i aç <span aria-hidden="true">↗</span></span>
+  </div>
+</a>
+
+<style>
+  .doc {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .doc:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgb(29 34 64 / 0.12);
+  }
+  .cover {
+    aspect-ratio: 396 / 380;
+    overflow: hidden;
+    background: #efe9e0;
+    border-bottom: 1px solid var(--line);
+  }
+  .cover img { width: 100%; height: auto; }
+  .placeholder {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    font-family: var(--display);
+    font-size: 2rem;
+    color: var(--ink-soft);
+  }
+  .meta { display: flex; flex-direction: column; gap: 4px; padding: 16px 18px 18px; flex: 1; }
+  .label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #9a3fbd;
+  }
+  .title { font-weight: 700; line-height: 1.35; }
+  @media (max-width: 520px) {
+    .meta { padding: 12px 12px 14px; }
+    .label { letter-spacing: 0.05em; font-size: 0.7rem; }
+    .title { font-size: 0.95rem; }
+  }
+  .dl { margin-top: auto; padding-top: 10px; font-size: 0.88rem; font-weight: 600; color: var(--navy); }
+</style>

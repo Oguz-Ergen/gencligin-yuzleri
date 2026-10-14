@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+import DocCard from '../components/DocCard.astro';
+import { getBelgeler, getDonemler } from '../lib/content';
+
+const [belgeler, donemler] = await Promise.all([getBelgeler(), getDonemler()]);
+const groups = donemler
+  .map((d) => ({ donem: d, docs: belgeler.filter((b) => b.donem === d.number) }))
+  .filter((g) => g.docs.length > 0);
+const other = belgeler.filter((b) => !donemler.some((d) => d.number === b.donem));
+---
+
+<Base title="Politika Belgeleri" description="Gençliğin Yüzleri forumlarında gençlerle birlikte geliştirilen politika önerileri ve raporlar.">
+  <section class="section">
+    <div class="wrap">
+      <span class="eyebrow">Kaynaklar</span>
+      <h1 class="page-title">Politika Belgeleri</h1>
+      <p class="lead">Forumlarda gençlerle birlikte geliştirdiğimiz politika önerileri. Belgeler PDF olarak yeni sekmede açılır.</p>
+
+      {groups.map((g) => (
+        <section class="group" aria-labelledby={`g-${g.donem.number}`}>
+          <h2 id={`g-${g.donem.number}`}>{g.donem.number}. Dönem <span>· {g.donem.title}</span></h2>
+          <div class="grid">{g.docs.map((b) => <DocCard belge={b} />)}</div>
+        </section>
+      ))}
+
+      {other.length > 0 && (
+        <section class="group">
+          <h2>Diğer Belgeler</h2>
+          <div class="grid">{other.map((b) => <DocCard belge={b} />)}</div>
+        </section>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-title { font-size: clamp(2.6rem, 7vw, 4.8rem); }
+  .group { margin-top: 64px; }
+  .group h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 22px; }
+  .group h2 span { color: var(--ink-soft); }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  @media (max-width: 960px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+</style>

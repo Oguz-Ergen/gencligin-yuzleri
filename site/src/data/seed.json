@@ -1,0 +1,101 @@
+{
+  "settings": {
+    "slogan": "Şimdi Söz Gençlikte!",
+    "heroText": "Gençlerin demokratik taleplerini görünür kılmak ve gençlerin ortaklaşan meselelerine çözüm üretmek için yürütülen bir gençlik hareketi.",
+    "heroImages": [
+      { "path": "/arsiv/gorseller/forum-atolye-1.webp", "alt": "Gençliğin Yüzleri forumunda gençler atölye çalışmasında" },
+      { "path": "/arsiv/gorseller/forum-toplu.webp", "alt": "Gençliğin Yüzleri forum katılımcılarının toplu fotoğrafı" },
+      { "path": "/arsiv/gorseller/forum-atolye-2.webp", "alt": "Gençliğin Yüzleri forumundan bir an" }
+    ],
+    "aboutTitle": "Gençliğin Yüzleri Nedir?",
+    "aboutText": [
+      "Gençliğin Yüzleri, 18-30 yaş arası gençlerin toplum ve karar vericiler tarafından duyulabilmesi adına, onların öncelikli sorunlarını belirlemek ve sağduyulu çözümler üretmek amacıyla 2022 yılında oluşturulmuş bir gençlik hareketidir.",
+      "Gençlerin demokratik katılımını sağlamak, gençlik politikaları oluşturmak ve gençlerin sorunlarına çözümler üretmek için çalışır."
+    ],
+    "aboutImages": [
+      { "path": "/arsiv/gorseller/panel.webp", "alt": "Gençliğin Yüzleri panelinde konuşan gençler" },
+      { "path": "/arsiv/gorseller/atolye-3.webp", "alt": "Gençlik forumunda grup tartışması" }
+    ],
+    "stats": [
+      { "value": "25", "label": "Gençlik ve Siyasal Forum" },
+      { "value": "3K+", "label": "Genç Katılımcı" },
+      { "value": "19", "label": "Politika Önerisi" },
+      { "value": "300+", "label": "Gönüllü Genç" }
+    ],
+    "volunteerUrl": "https://sosyaliklim.org/gonullu-ol/",
+    "email": "info@sosyaliklim.org",
+    "address": "Koşukavak Mah. 416912 Sk. No:5 Bornova, İzmir – Türkiye",
+    "social": []
+  },
+  "donemler": [
+    {
+      "number": 1,
+      "years": "",
+      "title": "2023 Genel Seçimleri ve Politika Önerileri",
+      "intro": [
+        "İlk dönemde NDI Türkiye iş birliğiyle, 2023 genel seçimleri doğrultusunda Adana-Mersin, Ankara, Denizli, Diyarbakır, Eskişehir, İstanbul, İzmir ve Samsun şehirlerinde gençlerle bir araya gelinerek Gençlik Forumları ve Siyasal Forumlar gerçekleştirildi.",
+        "Bu forumlar doğrultusunda politika önerileri geliştirildi ve savunuculuk kampanyası yürütüldü."
+      ],
+      "cities": ["Adana-Mersin", "Ankara", "Denizli", "Diyarbakır", "Eskişehir", "İstanbul", "İzmir", "Samsun"],
+      "highlight": {
+        "title": "56 Karar Alıcıya Politika Önerilerini Aktardık",
+        "text": "Gerçekleştirdiğimiz Siyasal Forumlar ile milletvekilleri ve milletvekili adayları ile gençleri buluşturduk. Bu forumlarda politika önerilerimizi, mecliste grubu bulunan karar alıcılara ve adaylara aktardık."
+      },
+      "activities": []
+    },
+    {
+      "number": 2,
+      "years": "",
+      "title": "2024 Yerel Seçimleri ve Politika Önerileri",
+      "intro": [
+        "İkinci dönemde NDI Türkiye iş birliğiyle, 2024 yerel seçimleri doğrultusunda Eskişehir, İstanbul, İzmir ve Samsun şehirlerinde gençlerle bir araya gelinerek Gençlik Forumları ve Siyasal Forumlar gerçekleştirildi.",
+        "Bu forumlar doğrultusunda politika önerileri geliştirildi ve adaylar ile iyi niyet sözleşmeleri imzalandı."
+      ],
+      "cities": ["Eskişehir", "İstanbul", "İzmir", "Samsun"],
+      "highlight": {
+        "title": "67 Belediye Başkanı Adayı ile İyi Niyet Sözleşmesi İmzalandı",
+        "text": "Politika önerilerimizi temel alarak hazırladığımız Belediye Başkan Adayları İçin Gençlik İyi Niyet Sözleşmesi ile 67 belediye başkanı adayı sözleşmeyi imzalayarak genç dostu belediye başkanı olacağına dair söz verdi."
+      },
+      "activities": []
+    },
+    {
+      "number": 3,
+      "years": "2024-2025",
+      "title": "Seçimler Sonrası: Diyalog ve Katılım",
+      "intro": [
+        "Bu dönem amacımız, seçimler sonrası dönemde ulusal ve yerel düzeyde gençler ile karar alıcılar arasında diyaloğu geliştirerek gençlerin talepleri ve politika önerilerimiz aracılığıyla ulusal ve yerel yönetişim ve karar alma süreçlerine katılımlarını güçlendirmek; oluşturduğumuz Ulusal Gençlik Ağı ile Türkiye'de gençlerin taleplerini sürekli olarak görünür kılmak ve gençlik katılımını güçlendirmek."
+      ],
+      "cities": [],
+      "highlight": null,
+      "activities": [
+        {
+          "title": "2025-2029 Stratejik Planı Hazırlık Sürecinde Gençlik Çalıştayları",
+          "text": "8 belediye ile, belediyelerin stratejik planlarını gençlerin ihtiyaçlarına duyarlı ve katılımcılık ilkesini göz önünde bulundurarak hazırlama süreçlerine destek olduk."
+        },
+        {
+          "title": "Ulusal Gençlik Yürütme Kurulu",
+          "text": "8 şehirde yer alan gönüllülerimizden, her şehirden 2-3 temsilci ile oluşturduğumuz Ulusal Gençlik Yürütme Kurulu ile ulusal politika önerilerimizi ele aldık ve programın gelecek dönemini planladık."
+        },
+        {
+          "title": "Siyasi Parti Genel Merkezleri Ziyaretleri",
+          "text": "Ulusal Gençlik Yürütme Kurulumuz ile Ankara'da gerçekleştirdiğimiz toplantının ardından mecliste grubu bulunan siyasi partilerin genel merkezlerini ziyaret ederek gençlerin oluşturduğu politika önerilerini karar alıcılara aktardık."
+        },
+        {
+          "title": "Eylem Planı Çalıştayları",
+          "text": "8 şehirde düzenlenecek bu çalıştaylar, 2. dönemde geliştirdiğimiz politika önerileri ve gençlik stratejilerini belediyelerin stratejik planlarında yer alan gençlik hedefleriyle harmanlayarak somut eylemlere dönüştürmeyi amaçlıyor."
+        }
+      ]
+    }
+  ],
+  "belgeler": [
+    { "title": "Genç İşsizliği", "label": "Politika Önerisi I", "donem": 1, "order": 1, "file": "/arsiv/belgeler/politika-onerisi-1-genc-issizligi.pdf", "cover": "/arsiv/kapaklar/politika-onerisi-1-genc-issizligi.jpg" },
+    { "title": "Eğitim", "label": "Politika Önerisi II", "donem": 1, "order": 2, "file": "/arsiv/belgeler/politika-onerisi-2-egitim.pdf", "cover": "/arsiv/kapaklar/politika-onerisi-2-egitim.jpg" },
+    { "title": "Gençlerin Temel İhtiyaçlara Erişimi", "label": "Politika Önerisi III", "donem": 1, "order": 3, "file": "/arsiv/belgeler/politika-onerisi-3-temel-ihtiyaclara-erisim.pdf", "cover": "/arsiv/kapaklar/politika-onerisi-3-temel-ihtiyaclara-erisim.jpg" },
+    { "title": "Gençlerin Siyasi Karar Süreçlerine Katılımı", "label": "Politika Önerisi IV", "donem": 1, "order": 4, "file": "/arsiv/belgeler/politika-onerisi-4-siyasi-katilim.pdf", "cover": "/arsiv/kapaklar/politika-onerisi-4-siyasi-katilim.jpg" },
+    { "title": "Gençlerin İstihdam ile İlgili Yaşadığı Sorunlar", "label": "Eskişehir", "donem": 2, "order": 1, "file": "/arsiv/belgeler/yerel-secim-eskisehir.pdf", "cover": "/arsiv/kapaklar/yerel-secim-eskisehir.jpg" },
+    { "title": "Belediyelerin Gençlerin Barındığı Alanlara Yönelik Deprem Politikalarının Eksikliği", "label": "İstanbul", "donem": 2, "order": 2, "file": "/arsiv/belgeler/yerel-secim-istanbul.pdf", "cover": "/arsiv/kapaklar/yerel-secim-istanbul.jpg" },
+    { "title": "Gençlere Yönelik Sosyal Alan Eksikliği", "label": "İzmir", "donem": 2, "order": 3, "file": "/arsiv/belgeler/yerel-secim-izmir.pdf", "cover": "/arsiv/kapaklar/yerel-secim-izmir.jpg" },
+    { "title": "Gençlerin Temel İhtiyaçlara Erişimi", "label": "Samsun", "donem": 2, "order": 4, "file": "/arsiv/belgeler/yerel-secim-samsun.pdf", "cover": "/arsiv/kapaklar/yerel-secim-samsun.jpg" }
+  ],
+  "duyurular": []
+}

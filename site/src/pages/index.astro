@@ -1,0 +1,337 @@
+---
+import Base from '../layouts/Base.astro';
+import DocCard from '../components/DocCard.astro';
+import DuyuruCard from '../components/DuyuruCard.astro';
+import { getSettings, getDonemler, getBelgeler, getDuyurular } from '../lib/content';
+
+const [settings, donemler, belgeler, duyurular] = await Promise.all([
+  getSettings(),
+  getDonemler(),
+  getBelgeler(),
+  getDuyurular(3),
+]);
+
+const accents = ['var(--orange)', 'var(--purple)', 'var(--teal)', 'var(--blue)'];
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<Base>
+  <!-- Giriş -->
+  <section class="hero">
+    <div class="slides" aria-hidden="true">
+      {settings.heroImages.map((img, i) => (
+        <img
+          src={img.url(1920)}
+          alt=""
+          class:list={{ active: i === 0 }}
+          loading={i === 0 ? 'eager' : 'lazy'}
+          fetchpriority={i === 0 ? 'high' : undefined}
+        />
+      ))}
+    </div>
+    <div class="wrap hero-inner">
+      <span class="eyebrow">Gençliğin Yüzleri</span>
+      <h1>{settings.slogan}</h1>
+      <p class="hero-text">{settings.heroText}</p>
+      <div class="hero-actions">
+        <a class="btn" href="#donemler">Neler yaptık?</a>
+        <a class="btn btn--ghost" href="/belgeler">Politika belgeleri</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sayılarla -->
+  {settings.stats.length > 0 && (
+    <section class="stats" aria-label="Sayılarla Gençliğin Yüzleri">
+      <ul class="wrap">
+        {settings.stats.map((s, i) => (
+          <li>
+            <span class="num" style={`color:${accents[i % accents.length]}`}>{s.value}</span>
+            <span class="lbl">{s.label}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <!-- Hakkımızda -->
+  <section class="section" id="hakkimizda">
+    <div class="wrap about">
+      <div>
+        <span class="eyebrow">Biz kimiz?</span>
+        <h2>{settings.aboutTitle}</h2>
+        {settings.aboutText.map((p, i) => <p class:list={{ lead: i === 0 }}>{p}</p>)}
+      </div>
+      <div class="about-media">
+        {settings.aboutImages.map((img) => (
+          <img src={img.url(900)} alt={img.alt} loading="lazy" width="900" height="506" />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Dönemler -->
+  <section id="donemler" class="donemler" aria-label="Dönemler">
+    {donemler.map((d, di) => {
+      const docs = belgeler.filter((b) => b.donem === d.number);
+      const accent = accents[di % accents.length];
+      return (
+        <article class="donem section" style={`--accent:${accent}`} id={`donem-${d.number}`}>
+          <div class="wrap">
+            <header class="donem-head">
+              <span class="donem-no">{d.number}. Dönem</span>
+              {d.years && <span class="donem-years">{d.years}</span>}
+            </header>
+            <div class="donem-body">
+              <h2>{d.title}</h2>
+              <div>
+                {d.intro.map((p) => <p>{p}</p>)}
+                {d.cities.length > 0 && (
+                  <ul class="chips" aria-label="Şehirler">
+                    {d.cities.map((c) => <li>{c}</li>)}
+                  </ul>
+                )}
+              </div>
+            </div>
+
+            {d.activities.length > 0 && (
+              <ol class="activities">
+                {d.activities.map((a, i) => (
+                  <li>
+                    <span class="act-no" aria-hidden="true">{pad(i + 1)}.</span>
+                    <h3>{a.title}</h3>
+                    <p>{a.text}</p>
+                  </li>
+                ))}
+              </ol>
+            )}
+
+            {docs.length > 0 && (
+              <div class="docs">
+                <h3>{d.number}. Dönem Politika Önerileri</h3>
+                <div class="doc-grid">
+                  {docs.map((b) => <DocCard belge={b} />)}
+                </div>
+              </div>
+            )}
+
+            {d.highlight && (
+              <aside class="highlight">
+                <span class="eyebrow">Çıktılar</span>
+                <h3>{d.highlight.title}</h3>
+                <p>{d.highlight.text}</p>
+              </aside>
+            )}
+          </div>
+        </article>
+      );
+    })}
+  </section>
+
+  <!-- Duyurular -->
+  {duyurular.length > 0 && (
+    <section class="section duyurular">
+      <div class="wrap">
+        <div class="row-head">
+          <div>
+            <span class="eyebrow">Güncel</span>
+            <h2>Duyurular</h2>
+          </div>
+          <a class="btn btn--ghost" href="/duyurular">Tüm duyurular</a>
+        </div>
+        <div class="duyuru-grid">
+          {duyurular.map((d) => <DuyuruCard duyuru={d} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Katıl / İletişim -->
+  <section class="section cta" id="iletisim">
+    <div class="wrap cta-inner">
+      <div>
+        <span class="eyebrow">Sen de katıl</span>
+        <h2>Söz gençlikte, sıra sende.</h2>
+        <p class="lead">Şehrindeki forumlara katılmak, gönüllü olmak ya da birlikte çalışmak için bize ulaş.</p>
+      </div>
+      <div class="cta-actions">
+        {settings.volunteerUrl && (
+          <a class="btn btn--light" href={settings.volunteerUrl} target="_blank" rel="noopener">Gönüllü ol</a>
+        )}
+        {settings.email && (
+          <a class="btn btn--ghost" href={`mailto:${settings.email}`}>{settings.email}</a>
+        )}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Giriş görselleri arasında yumuşak geçiş (hareket azaltma tercihine saygı göstererek).
+  const slides = [...document.querySelectorAll<HTMLImageElement>('.slides img')];
+  if (slides.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let i = 0;
+    setInterval(() => {
+      slides[i].classList.remove('active');
+      i = (i + 1) % slides.length;
+      slides[i].classList.add('active');
+    }, 6000);
+  }
+</script>
+
+<style>
+  /* Giriş */
+  .hero {
+    position: relative;
+    min-height: min(88vh, 820px);
+    display: flex;
+    align-items: flex-end;
+    color: #fff;
+    overflow: hidden;
+    background: var(--ink);
+  }
+  .slides img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.04);
+    transition: opacity 1.2s ease, transform 7s ease-out;
+  }
+  .slides img.active { opacity: 1; transform: scale(1); }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgb(29 34 64 / 0.15) 0%, rgb(29 34 64 / 0.55) 50%, rgb(29 34 64 / 0.92) 100%);
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding-top: 120px;
+    padding-bottom: clamp(48px, 8vw, 96px);
+  }
+  .hero h1 { max-width: 12ch; margin-bottom: 0.3em; }
+  .hero-text { font-size: clamp(1.1rem, 1.8vw, 1.35rem); max-width: 56ch; color: #eef0f8; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .hero .eyebrow { color: #ffb37f; }
+  .hero .btn--ghost { color: #fff; }
+
+  /* Sayılar */
+  .stats { background: var(--ink); color: #fff; padding: 8px 0 56px; }
+  .stats ul {
+    list-style: none;
+    margin-top: 0;
+    margin-bottom: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+  .stats li {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 22px;
+    border-top: 1px solid rgb(255 255 255 / 0.18);
+  }
+  .num { font-family: var(--display); font-size: clamp(2.6rem, 6vw, 4.4rem); line-height: 1; }
+  .lbl { font-weight: 600; color: #cfd3e6; }
+  @media (max-width: 760px) { .stats ul { grid-template-columns: repeat(2, 1fr); } }
+
+  /* Hakkımızda */
+  .about {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: clamp(32px, 6vw, 80px);
+    align-items: center;
+  }
+  .about-media { display: grid; gap: 16px; }
+  .about-media img { border-radius: var(--radius); width: 100%; height: auto; object-fit: cover; }
+  .about-media img:nth-child(2) { width: 78%; justify-self: end; margin-top: -60px; border: 6px solid var(--cream); }
+  @media (max-width: 860px) { .about { grid-template-columns: 1fr; } }
+
+  /* Dönemler */
+  .donem { border-top: 1px solid var(--line); }
+  .donem:nth-child(even) { background: var(--paper); }
+  .donem-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 18px; }
+  .donem-no {
+    font-family: var(--display);
+    text-transform: uppercase;
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+    color: #fff;
+    background: var(--ink);
+    padding: 4px 14px 4px 12px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .donem-no::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+  .donem-years { font-weight: 700; color: var(--ink-soft); }
+  .donem-body {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(24px, 5vw, 64px);
+    align-items: start;
+  }
+  .donem-body h2 { margin: 0; }
+  .donem-body .chips { margin-top: 18px; }
+  @media (max-width: 860px) { .donem-body { grid-template-columns: 1fr; } }
+
+  .activities {
+    list-style: none;
+    padding: 0;
+    margin: 48px 0 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .activities li {
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px 26px 18px;
+  }
+  .donem:nth-child(odd) .activities li { background: var(--paper); }
+  .act-no { font-family: var(--display); font-size: 2.2rem; line-height: 1; color: var(--accent); display: block; margin-bottom: 12px; }
+  .activities h3 { text-transform: none; font-family: var(--body); font-weight: 750; font-size: 1.15rem; letter-spacing: 0; line-height: 1.3; }
+  .activities p { color: var(--ink-soft); font-size: 0.98rem; }
+  @media (max-width: 760px) { .activities { grid-template-columns: 1fr; } }
+
+  .docs { margin-top: 56px; }
+  .docs > h3 { margin-bottom: 20px; }
+  .doc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  @media (max-width: 960px) { .doc-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .highlight {
+    margin-top: 40px;
+    padding: clamp(24px, 4vw, 40px);
+    border-radius: var(--radius);
+    background: var(--ink);
+    color: #fff;
+    border-left: 10px solid var(--accent);
+  }
+  .highlight .eyebrow { color: var(--accent); }
+  .highlight h3 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); max-width: 24ch; }
+  .highlight p { max-width: 70ch; margin: 0; }
+
+  /* Duyurular */
+  .duyurular { border-top: 1px solid var(--line); }
+  .row-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+  .duyuru-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  @media (max-width: 960px) { .duyuru-grid { grid-template-columns: 1fr; } }
+
+  /* Katıl */
+  .cta { background: var(--navy); color: #fff; }
+  .cta .eyebrow { color: #ffc49d; }
+  .cta .lead { color: #dfe5f3; }
+  .cta-inner { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: center; }
+  .cta-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+  .cta .btn--ghost { color: #fff; }
+  @media (max-width: 860px) { .cta-inner { grid-template-columns: 1fr; } }
+</style>

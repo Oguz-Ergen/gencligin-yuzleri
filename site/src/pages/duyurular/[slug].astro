@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getDuyuru, formatDate } from '../../lib/content';
+
+const duyuru = await getDuyuru(Astro.params.slug!);
+if (!duyuru) return Astro.rewrite('/404');
+---
+
+<Base title={duyuru.title} description={duyuru.summary} image={duyuru.image?.url(1200)}>
+  <article class="section">
+    <div class="wrap narrow">
+      <a class="back" href="/duyurular">← Tüm duyurular</a>
+      <p class="meta">
+        <time datetime={duyuru.date}>{formatDate(duyuru.date)}</time>
+        {duyuru.category && <span> · {duyuru.category}</span>}
+      </p>
+      <h1>{duyuru.title}</h1>
+      {duyuru.summary && <p class="lead">{duyuru.summary}</p>}
+      {duyuru.image && (
+        <img class="cover" src={duyuru.image.url(1400)} alt={duyuru.image.alt} width="1400" height="788" />
+      )}
+      <div class="prose" set:html={duyuru.bodyHtml} />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .narrow { max-width: 820px; }
+  .back { font-weight: 600; text-decoration: none; color: var(--navy); }
+  .meta { margin-top: 28px; color: var(--ink-soft); font-size: 0.95rem; }
+  h1 { font-size: clamp(2.2rem, 5.5vw, 3.8rem); }
+  .cover { width: 100%; height: auto; border-radius: var(--radius); margin: 32px 0 40px; }
+</style>
