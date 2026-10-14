@@ -1,7 +1,4 @@
-// Site içeriği: SANITY_PROJECT_ID tanımlıysa Sanity'den, değilse yerel seed.json'dan okunur.
-import { createClient, type SanityClient } from '@sanity/client';
-import { createImageUrlBuilder } from '@sanity/image-url';
-import { toHTML, uriLooksSafe } from '@portabletext/to-html';
+// Site içeriği: CMS_URL tanımlıysa kendi panelimizden (Payload REST API), değilse yerel seed.json'dan okunur.
 import seed from '../data/seed.json';
 
 export type Img = { alt: string; url: (width: number) => string };
@@ -50,38 +47,35 @@ export type Duyuru = {
   bodyHtml: string;
 };
 
-const env = import.meta.env;
-const projectId = process.env.SANITY_PROJECT_ID ?? env.SANITY_PROJECT_ID;
-const dataset = process.env.SANITY_DATASET ?? env.SANITY_DATASET ?? 'production';
+const cmsUrl = (process.env.CMS_URL ?? import.meta.env.CMS_URL ?? '').replace(/\/$/, '');
 
-export const usingSanity = Boolean(projectId);
-
-const client: SanityClient | null = projectId
-  ? createClient({ projectId, dataset, apiVersion: '2025-06-01', useCdn: true, perspective: 'published' })
-  : null;
-const builder = client ? createImageUrlBuilder(client) : null;
-
-// Aynı sorguyu 60 sn boyunca tekrar göndermeyelim (Sanity ücretsiz plan istek kotası için).
+// Aynı isteği 60 sn boyunca tekrar göndermeyelim.
 const TTL = 60_000;
 const cache = new Map<string, { at: number; value: Promise<any> }>();
 
-function query<T = any>(groq: string, params: Record<string, unknown> = {}): Promise<T> {
-  const key = groq + JSON.stringify(params);
-  const hit = cache.get(key);
+function api<T = any>(path: string): Promise<T> {
+  const hit = cache.get(path);
   if (hit && Date.now() - hit.at < TTL) return hit.value;
-  const value = client!.fetch(groq, params);
-  value.catch(() => cache.delete(key));
-  cache.set(key, { at: Date.now(), value });
+  const value = fetch(cmsUrl + path).then((r) => {
+    if (!r.ok) throw new Error(`CMS ${r.status}: ${path}`);
+    return r.json();
+  });
+  value.catch(() => cache.delete(path));
+  cache.set(path, { at: Date.now(), value });
   return value;
 }
 
 // --- yardımcılar ---
 
-function sanityImg(image: any, fallbackAlt = ''): Img | null {
-  if (!image?.asset || !builder) return null;
+const abs = (u?: string) => (!u ? '' : /^https?:/.test(u) ? u : cmsUrl + u);
+
+/** Payload'ın ürettiği boyutlardan istenen genişliğe en uygun olanı seçer. */
+function cmsImg(media: any, fallbackAlt = ''): Img | null {
+  if (!media || typeof media !== 'object' || !media.url) return null;
+  const s = media.sizes ?? {};
   return {
-    alt: image.alt ?? fallbackAlt,
-    url: (w) => builder.image(image).width(w).fit('max').auto('format').url(),
+    alt: media.alt ?? fallbackAlt,
+    url: (w) => abs((w <= 720 ? s.kart?.url : s.genis?.url) || media.url),
   };
 }
 
@@ -92,76 +86,46 @@ function localImg(i: { path: string; alt: string }): Img {
 const paragraphs = (text?: string) =>
   (text ?? '').split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 
-function bodyToHtml(body: any[] | undefined): string {
-  if (!body) return '';
-  return toHTML(body, {
-    components: {
-      types: {
-        image: ({ value }) => {
-          const img = sanityImg(value);
-          if (!img) return '';
-          const caption = value.caption ? `<figcaption>${escape(value.caption)}</figcaption>` : '';
-          return `<figure><img src="${img.url(1200)}" alt="${escape(img.alt)}" loading="lazy">${caption}</figure>`;
-        },
-      },
-      marks: {
-        link: ({ children, value }) => {
-          const href = value?.href ?? '';
-          if (!uriLooksSafe(href)) return children;
-          const ext = /^https?:/.test(href) ? ' target="_blank" rel="noopener"' : '';
-          return `<a href="${escape(href)}"${ext}>${children}</a>`;
-        },
-      },
-    },
-  });
-}
-
-const escape = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
-
 // --- sorgular ---
 
 export async function getSettings(): Promise<Settings> {
-  if (!client) {
+  if (!cmsUrl) {
     const s = seed.settings;
-    return {
-      ...s,
-      heroImages: s.heroImages.map(localImg),
-      aboutImages: s.aboutImages.map(localImg),
-    };
+    return { ...s, heroImages: s.heroImages.map(localImg), aboutImages: s.aboutImages.map(localImg) };
   }
-  const s = await query(`*[_id == "siteSettings"][0]`);
+  const s = await api('/api/globals/site-ayarlari?depth=1');
+  const imgs = (list: any[] = []) => list.map((i) => cmsImg(i.image)).filter((i): i is Img => Boolean(i));
   return {
-    slogan: s?.slogan ?? '',
-    heroText: s?.heroText ?? '',
-    heroImages: (s?.heroImages ?? []).map((i: any) => sanityImg(i)).filter(Boolean),
-    aboutTitle: s?.aboutTitle ?? '',
-    aboutText: paragraphs(s?.aboutText),
-    aboutImages: (s?.aboutImages ?? []).map((i: any) => sanityImg(i)).filter(Boolean),
-    stats: s?.stats ?? [],
-    volunteerUrl: s?.volunteerUrl,
-    email: s?.email,
-    address: s?.address,
-    social: s?.social ?? [],
+    slogan: s.slogan ?? '',
+    heroText: s.heroText ?? '',
+    heroImages: imgs(s.heroImages),
+    aboutTitle: s.aboutTitle ?? '',
+    aboutText: paragraphs(s.aboutText),
+    aboutImages: imgs(s.aboutImages),
+    stats: (s.stats ?? []).map(({ value, label }: Stat) => ({ value, label })),
+    volunteerUrl: s.volunteerUrl || undefined,
+    email: s.email || undefined,
+    address: s.address || undefined,
+    social: (s.social ?? []).map(({ platform, url }: Social) => ({ platform, url })),
   };
 }
 
 export async function getDonemler(): Promise<Donem[]> {
-  if (!client) return seed.donemler as Donem[];
-  const list = await query(`*[_type == "donem"] | order(number asc)`);
-  return list.map((d: any) => ({
+  if (!cmsUrl) return seed.donemler as Donem[];
+  const { docs } = await api('/api/donemler?sort=number&limit=100&depth=0');
+  return docs.map((d: any) => ({
     number: d.number,
-    years: d.years,
+    years: d.years || undefined,
     title: d.title,
     intro: paragraphs(d.intro),
-    cities: d.cities ?? [],
+    cities: (d.cities ?? []).map((c: any) => c.name),
     highlight: d.highlightTitle ? { title: d.highlightTitle, text: d.highlightText ?? '' } : null,
-    activities: d.activities ?? [],
+    activities: (d.activities ?? []).map(({ title, text }: any) => ({ title, text: text ?? '' })),
   }));
 }
 
 export async function getBelgeler(): Promise<Belge[]> {
-  if (!client) {
+  if (!cmsUrl) {
     return seed.belgeler.map((b) => ({
       title: b.title,
       label: b.label,
@@ -170,41 +134,42 @@ export async function getBelgeler(): Promise<Belge[]> {
       cover: localImg({ path: b.cover, alt: `${b.label}: ${b.title} kapağı` }),
     }));
   }
-  const list = await query(
-    `*[_type == "belge" && defined(file.asset)] | order(donem->number asc, order asc, title asc){
-      title, label, "donem": donem->number, "fileUrl": file.asset->url, cover
-    }`,
-  );
-  return list.map((b: any) => ({ ...b, cover: sanityImg(b.cover, `${b.title} kapağı`) }));
+  const { docs } = await api('/api/belgeler?sort=order&limit=500&depth=1');
+  return docs
+    .filter((b: any) => b.url)
+    .map((b: any) => ({
+      title: b.title,
+      label: b.label || undefined,
+      donem: b.donem?.number,
+      fileUrl: abs(b.url),
+      cover: cmsImg(b.cover, `${b.title} kapağı`),
+    }))
+    .sort((a: Belge, b: Belge) => (a.donem ?? 99) - (b.donem ?? 99));
 }
-
-const duyuruFields = `title, "slug": slug.current, date, category, summary, image, body`;
 
 function toDuyuru(d: any): Duyuru {
   return {
     title: d.title,
     slug: d.slug,
     date: d.date,
-    category: d.category,
-    summary: d.summary,
-    image: sanityImg(d.image, d.title),
-    bodyHtml: bodyToHtml(d.body),
+    category: d.category || undefined,
+    summary: d.summary || undefined,
+    image: cmsImg(d.image, d.title),
+    bodyHtml: d.bodyHtml ?? '',
   };
 }
 
-export async function getDuyurular(limit?: number): Promise<Duyuru[]> {
-  if (!client) return [];
-  const range = limit ? `[0...${limit}]` : '';
-  const list = await query(
-    `*[_type == "duyuru" && defined(slug.current)] | order(date desc)${range}{${duyuruFields}}`,
-  );
-  return list.map(toDuyuru);
+// Ziyaretçiler API'den yalnızca yayınlanmış duyuruları alır (panel erişim kuralı).
+export async function getDuyurular(limit = 100): Promise<Duyuru[]> {
+  if (!cmsUrl) return [];
+  const { docs } = await api(`/api/duyurular?sort=-date&limit=${limit}&depth=1`);
+  return docs.filter((d: any) => d.slug).map(toDuyuru);
 }
 
 export async function getDuyuru(slug: string): Promise<Duyuru | null> {
-  if (!client) return null;
-  const d = await query(`*[_type == "duyuru" && slug.current == $slug][0]{${duyuruFields}}`, { slug });
-  return d ? toDuyuru(d) : null;
+  if (!cmsUrl) return null;
+  const { docs } = await api(`/api/duyurular?where[slug][equals]=${encodeURIComponent(slug)}&limit=1&depth=1`);
+  return docs[0] ? toDuyuru(docs[0]) : null;
 }
 
 export const formatDate = (iso: string) =>
