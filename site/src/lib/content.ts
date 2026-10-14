@@ -61,6 +61,20 @@ const client: SanityClient | null = projectId
   : null;
 const builder = client ? createImageUrlBuilder(client) : null;
 
+// Aynı sorguyu 60 sn boyunca tekrar göndermeyelim (Sanity ücretsiz plan istek kotası için).
+const TTL = 60_000;
+const cache = new Map<string, { at: number; value: Promise<any> }>();
+
+function query<T = any>(groq: string, params: Record<string, unknown> = {}): Promise<T> {
+  const key = groq + JSON.stringify(params);
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < TTL) return hit.value;
+  const value = client!.fetch(groq, params);
+  value.catch(() => cache.delete(key));
+  cache.set(key, { at: Date.now(), value });
+  return value;
+}
+
 // --- yardımcılar ---
 
 function sanityImg(image: any, fallbackAlt = ''): Img | null {
@@ -116,7 +130,7 @@ export async function getSettings(): Promise<Settings> {
       aboutImages: s.aboutImages.map(localImg),
     };
   }
-  const s = await client.fetch(`*[_id == "siteSettings"][0]`);
+  const s = await query(`*[_id == "siteSettings"][0]`);
   return {
     slogan: s?.slogan ?? '',
     heroText: s?.heroText ?? '',
@@ -134,7 +148,7 @@ export async function getSettings(): Promise<Settings> {
 
 export async function getDonemler(): Promise<Donem[]> {
   if (!client) return seed.donemler as Donem[];
-  const list = await client.fetch(`*[_type == "donem"] | order(number asc)`);
+  const list = await query(`*[_type == "donem"] | order(number asc)`);
   return list.map((d: any) => ({
     number: d.number,
     years: d.years,
@@ -156,7 +170,7 @@ export async function getBelgeler(): Promise<Belge[]> {
       cover: localImg({ path: b.cover, alt: `${b.label}: ${b.title} kapağı` }),
     }));
   }
-  const list = await client.fetch(
+  const list = await query(
     `*[_type == "belge" && defined(file.asset)] | order(donem->number asc, order asc, title asc){
       title, label, "donem": donem->number, "fileUrl": file.asset->url, cover
     }`,
@@ -181,7 +195,7 @@ function toDuyuru(d: any): Duyuru {
 export async function getDuyurular(limit?: number): Promise<Duyuru[]> {
   if (!client) return [];
   const range = limit ? `[0...${limit}]` : '';
-  const list = await client.fetch(
+  const list = await query(
     `*[_type == "duyuru" && defined(slug.current)] | order(date desc)${range}{${duyuruFields}}`,
   );
   return list.map(toDuyuru);
@@ -189,7 +203,7 @@ export async function getDuyurular(limit?: number): Promise<Duyuru[]> {
 
 export async function getDuyuru(slug: string): Promise<Duyuru | null> {
   if (!client) return null;
-  const d = await client.fetch(`*[_type == "duyuru" && slug.current == $slug][0]{${duyuruFields}}`, { slug });
+  const d = await query(`*[_type == "duyuru" && slug.current == $slug][0]{${duyuruFields}}`, { slug });
   return d ? toDuyuru(d) : null;
 }
 

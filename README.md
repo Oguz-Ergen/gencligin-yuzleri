@@ -32,8 +32,11 @@ cd studio && npm install && npm run dev    # http://localhost:3333
 
 ## Yayına alma (Google Cloud Run)
 
+GCP projesi: `gencligin-yuzleri` (bölge `europe-west1`, servis `gencligin-yuzleri`).
+Geçici adres: https://gencligin-yuzleri-145244747694.europe-west1.run.app
+
 ```bash
-cd site && ./deploy.sh <gcp-proje-id> <sanity-proje-id>
+cd site && ./deploy.sh gencligin-yuzleri <sanity-proje-id>
 ```
 
 Alan adı: Cloud Run → Domain mappings → `gencliginyuzleri.org` ve `www` eklenir;
