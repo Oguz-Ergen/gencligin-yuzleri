@@ -22,15 +22,16 @@ içerik en geç bir dakikada sitede görünür. `CMS_URL` tanımlı değilse sit
 
 ## Diller
 
-Site Türkçe (`/`) ve İngilizce (`/en`, `/en/documents`, `/en/news`) yayınlanır.
+Site Türkçe (`/`) ve İngilizce (`/en`, `/en/documents`, `/en/news`, `/en/blog`) yayınlanır.
 - **İçerik:** paneldeki her kaydın üstünde Türkçe / English seçici var. İngilizcesi girilmemiş alanlarda Türkçe metin gösterilir.
 - **Arayüz metinleri** (menü, düğmeler, sabit başlıklar): `site/src/i18n.ts`.
-- Duyurularda bağlantı adresi (slug) iki dilde aynıdır: `/duyurular/x` ↔ `/en/news/x`.
+- Duyuru ve blog yazılarında bağlantı adresi (slug) iki dilde aynıdır: `/duyurular/x` ↔ `/en/news/x`, `/blog/x` ↔ `/en/blog/x`.
 - İlk İngilizce içerik `cms/src/seed-en.ts` ile girildi (bir kez çalıştırılır).
 
 ## Panel
 
 - **Duyurular:** taslak / yayın akışı, kapak görseli, zengin metin
+- **Blog Yazıları:** yazar, kategori, özet, kapak, zengin metin; okuma süresi otomatik. Sitede `/blog` ve `/en/blog`
 - **Politika Belgeleri:** PDF yükleme, kapak, dönem, sıra
 - **Dönemler:** açıklama, şehirler, faaliyet kartları, öne çıkan çıktı
 - **Görseller:** tüm fotoğraflar (otomatik webp ve boyutlandırma)

@@ -1,10 +1,7 @@
 import type { CollectionConfig } from 'payload'
-import { convertLexicalToHTML } from '@payloadcms/richtext-lexical/html'
 import { loggedIn, publishedOrLoggedIn } from '../access'
+import { bodyHtmlField } from '../richText'
 import { slugifyTr } from '../slugify'
-
-const escape = (s: string) =>
-  s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
 
 export const Duyurular: CollectionConfig = {
   slug: 'duyurular',
@@ -62,32 +59,7 @@ export const Duyurular: CollectionConfig = {
         ],
       },
     },
-    {
-      // Site için hazır HTML; veritabanına kaydedilmez, okunurken üretilir.
-      name: 'bodyHtml',
-      type: 'text',
-      virtual: true,
-      admin: { hidden: true },
-      hooks: {
-        afterRead: [
-          ({ siblingData }) => {
-            if (!siblingData?.body) return ''
-            return convertLexicalToHTML({
-              data: siblingData.body,
-              converters: ({ defaultConverters }) => ({
-                ...defaultConverters,
-                upload: ({ node }) => {
-                  const doc = node.value as { url?: string; alt?: string; sizes?: { genis?: { url?: string } } }
-                  if (typeof doc !== 'object' || !doc?.url) return ''
-                  const src = doc.sizes?.genis?.url || doc.url
-                  return `<figure><img src="${escape(src)}" alt="${escape(doc.alt ?? '')}" loading="lazy"></figure>`
-                },
-              }),
-            })
-          },
-        ],
-      },
-    },
+    bodyHtmlField,
   ],
 }
 

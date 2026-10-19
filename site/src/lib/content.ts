@@ -48,6 +48,18 @@ export type Duyuru = {
   bodyHtml: string;
 };
 
+export type Yazi = {
+  title: string;
+  slug: string;
+  date: string;
+  author?: string;
+  category?: string;
+  excerpt?: string;
+  image: Img | null;
+  bodyHtml: string;
+  readingMinutes: number;
+};
+
 const cmsUrl = (process.env.CMS_URL ?? import.meta.env.CMS_URL ?? '').replace(/\/$/, '');
 
 // Aynı isteği 60 sn boyunca tekrar göndermeyelim.
@@ -171,6 +183,33 @@ export async function getDuyuru(slug: string, lang: Lang = 'tr'): Promise<Duyuru
   if (!cmsUrl) return null;
   const { docs } = await api(`/api/duyurular?where[slug][equals]=${encodeURIComponent(slug)}&limit=1&depth=1&locale=${lang}`);
   return docs[0] ? toDuyuru(docs[0]) : null;
+}
+
+function toYazi(d: any): Yazi {
+  return {
+    title: d.title,
+    slug: d.slug,
+    date: d.publishedAt,
+    author: d.author || undefined,
+    category: d.category || undefined,
+    excerpt: d.excerpt || undefined,
+    image: cmsImg(d.image, d.title),
+    bodyHtml: d.bodyHtml ?? '',
+    readingMinutes: d.readingMinutes ?? 1,
+  };
+}
+
+// Ziyaretçiler API'den yalnızca yayınlanmış yazıları alır (panel erişim kuralı).
+export async function getYazilar(lang: Lang = 'tr', limit = 100): Promise<Yazi[]> {
+  if (!cmsUrl) return [];
+  const { docs } = await api(`/api/yazilar?sort=-publishedAt&limit=${limit}&depth=1&locale=${lang}`);
+  return docs.filter((d: any) => d.slug).map(toYazi);
+}
+
+export async function getYazi(slug: string, lang: Lang = 'tr'): Promise<Yazi | null> {
+  if (!cmsUrl) return null;
+  const { docs } = await api(`/api/yazilar?where[slug][equals]=${encodeURIComponent(slug)}&limit=1&depth=1&locale=${lang}`);
+  return docs[0] ? toYazi(docs[0]) : null;
 }
 
 export const formatDate = (iso: string, lang: Lang = 'tr') =>

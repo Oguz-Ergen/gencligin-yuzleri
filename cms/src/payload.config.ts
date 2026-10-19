@@ -13,6 +13,7 @@ import { Media } from './collections/Media'
 import { Donemler } from './collections/Donemler'
 import { Belgeler } from './collections/Belgeler'
 import { Duyurular } from './collections/Duyurular'
+import { Yazilar } from './collections/Yazilar'
 import { SiteAyarlari } from './globals/SiteAyarlari'
 import { migrations } from './migrations'
 
@@ -54,7 +55,7 @@ export default buildConfig({
     defaultLocale: 'tr',
     fallback: true,
   },
-  collections: [Duyurular, Belgeler, Donemler, Media, Users],
+  collections: [Duyurular, Yazilar, Belgeler, Donemler, Media, Users],
   globals: [SiteAyarlari],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

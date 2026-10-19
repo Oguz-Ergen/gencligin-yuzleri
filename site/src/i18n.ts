@@ -7,9 +7,11 @@ export const routes = {
   home: { tr: '/', en: '/en' },
   belgeler: { tr: '/belgeler', en: '/en/documents' },
   duyurular: { tr: '/duyurular', en: '/en/news' },
+  blog: { tr: '/blog', en: '/en/blog' },
 } as const;
 
 export const duyuruPath = (lang: Lang, slug: string) => `${routes.duyurular[lang]}/${slug}`;
+export const yaziPath = (lang: Lang, slug: string) => `${routes.blog[lang]}/${slug}`;
 /** Ana sayfadaki bir bölüme bağlantı, örn. /#iletisim ya da /en#contact */
 export const anchor = (lang: Lang, id: 'about' | 'periods' | 'contact') => `${routes.home[lang]}#${t[lang].ids[id]}`;
 
@@ -21,7 +23,7 @@ export const t = {
     hashtag: '#ŞimdiSözGençlikte',
     skip: 'İçeriğe geç',
     homeLabel: 'Gençliğin Yüzleri ana sayfa',
-    nav: { about: 'Hakkımızda', periods: 'Dönemler', belgeler: 'Politika Belgeleri', duyurular: 'Duyurular', contact: 'İletişim' },
+    nav: { about: 'Hakkımızda', periods: 'Dönemler', belgeler: 'Politika Belgeleri', blog: 'Blog', duyurular: 'Duyurular', contact: 'İletişim' },
     mainMenu: 'Ana menü',
     openMenu: 'Menüyü aç',
     volunteer: 'Gönüllü ol',
@@ -54,6 +56,19 @@ export const t = {
       empty: 'Şu an yayında duyuru yok. Yeni forum ve etkinliklerden haberdar olmak için',
       emptyLink: 'bize yaz',
     },
+    blog: {
+      title: 'Blog',
+      description: 'Gençliğin Yüzleri blogu: gençlerin yazıları, saha notları ve röportajlar.',
+      intro: 'Gençlerin kaleminden yazılar, forumlardan saha notları ve röportajlar.',
+      empty: 'Henüz yazı yok. İlk yazılar çok yakında burada. Yazmak istersen',
+      emptyLink: 'bize yaz',
+      latest: 'Blogdan',
+      all: 'Tüm yazılar',
+      by: 'Yazan',
+      readMin: (n: number) => `${n} dk okuma`,
+      more: 'Diğer yazılar',
+      back: 'Tüm yazılar',
+    },
     notFound: { title: 'Bu sayfa bulunamadı.', text: 'Bağlantı değişmiş ya da sayfa kaldırılmış olabilir.', back: 'Ana sayfaya dön' },
     footer: {
       before: 'Gençliğin Yüzleri, ',
@@ -69,7 +84,7 @@ export const t = {
     hashtag: '#NowYouthSpeaks',
     skip: 'Skip to content',
     homeLabel: 'Gençliğin Yüzleri home',
-    nav: { about: 'About', periods: 'Our work', belgeler: 'Policy papers', duyurular: 'News', contact: 'Contact' },
+    nav: { about: 'About', periods: 'Our work', belgeler: 'Policy papers', blog: 'Blog', duyurular: 'News', contact: 'Contact' },
     mainMenu: 'Main menu',
     openMenu: 'Open menu',
     volunteer: 'Volunteer',
@@ -102,6 +117,19 @@ export const t = {
       empty: 'There is no news right now. To hear about new forums and events,',
       emptyLink: 'write to us',
     },
+    blog: {
+      title: 'Blog',
+      description: 'The Gençliğin Yüzleri blog: writing by young people, field notes and interviews.',
+      intro: 'Writing by young people, field notes from our forums and interviews.',
+      empty: 'No posts yet. The first ones are coming soon. If you would like to write for us,',
+      emptyLink: 'get in touch',
+      latest: 'From the blog',
+      all: 'All posts',
+      by: 'By',
+      readMin: (n: number) => `${n} min read`,
+      more: 'More posts',
+      back: 'All posts',
+    },
     notFound: { title: 'Page not found.', text: 'The link may have changed or the page may have been removed.', back: 'Back to the home page' },
     footer: {
       before: 'Gençliğin Yüzleri is a youth programme run by ',
@@ -112,8 +140,12 @@ export const t = {
   },
 };
 
-/** Panelde Türkçe sabit değer olarak tutulan duyuru kategorilerinin görünen adı. */
+/** Panelde Türkçe sabit değer olarak tutulan duyuru ve blog kategorilerinin görünen adı. */
 const categoriesEn: Record<string, string> = {
+  Görüş: 'Opinion',
+  'Saha Notları': 'Field notes',
+  Röportaj: 'Interview',
+  Politika: 'Policy',
   Etkinlik: 'Event',
   Çağrı: 'Open call',
   Haber: 'News',

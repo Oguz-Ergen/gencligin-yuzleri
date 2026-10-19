@@ -1,0 +1,9 @@
+---
+import Yazi from '../../views/Yazi.astro';
+import { getYazi } from '../../lib/content';
+
+const yazi = await getYazi(Astro.params.slug!, 'tr');
+if (!yazi) return Astro.rewrite('/404');
+---
+
+<Yazi lang="tr" yazi={yazi} />

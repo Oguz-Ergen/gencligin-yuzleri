@@ -8,6 +8,7 @@ const links = [
   { href: anchor(lang, 'about'), label: s.nav.about },
   { href: anchor(lang, 'periods'), label: s.nav.periods },
   { href: routes.belgeler[lang], label: s.nav.belgeler },
+  { href: routes.blog[lang], label: s.nav.blog },
   { href: routes.duyurular[lang], label: s.nav.duyurular },
   { href: anchor(lang, 'contact'), label: s.nav.contact },
 ];
@@ -24,7 +25,7 @@ const other = lang === 'tr' ? 'en' : 'tr';
     <nav aria-label={s.mainMenu} class="nav-desktop">
       <ul>
         {links.map((l) => (
-          <li><a href={l.href} aria-current={path === l.href ? 'page' : undefined}>{l.label}</a></li>
+          <li><a href={l.href} aria-current={path === l.href || (l.href !== '/' && !l.href.includes('#') && path.startsWith(l.href + '/')) ? 'page' : undefined}>{l.label}</a></li>
         ))}
       </ul>
     </nav>
@@ -137,7 +138,7 @@ const other = lang === 'tr' ? 'en' : 'tr';
   }
   .nav-mobile a:hover { background: var(--mist); }
 
-  @media (max-width: 860px) {
+  @media (max-width: 1100px) {
     .nav-desktop { display: none; }
     .nav-mobile { display: block; }
     .lang {

@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     duyurular: Duyurular;
+    yazilar: Yazilar;
     belgeler: Belgeler;
     donemler: Donemler;
     media: Media;
@@ -80,6 +81,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     duyurular: DuyurularSelect<false> | DuyurularSelect<true>;
+    yazilar: YazilarSelect<false> | YazilarSelect<true>;
     belgeler: BelgelerSelect<false> | BelgelerSelect<true>;
     donemler: DonemlerSelect<false> | DonemlerSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -179,8 +181,6 @@ export interface Media {
    * Görseli göremeyenler için kısa açıklama. Örn: "İzmir forumunda atölye çalışması"
    */
   alt: string;
-  prefix?: string | null;
-  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -212,6 +212,51 @@ export interface Media {
   };
 }
 /**
+ * Gençlerin ve ekibin yazıları, saha notları, röportajlar. "Yayınla" demeden sitede görünmez.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "yazilar".
+ */
+export interface Yazilar {
+  id: number;
+  title: string;
+  /**
+   * Örn: Ayşe Yılmaz, İzmir gönüllüsü
+   */
+  author?: string | null;
+  publishedAt: string;
+  category?: ('Görüş' | 'Saha Notları' | 'Röportaj' | 'Gençlik Gündemi' | 'Politika') | null;
+  /**
+   * Blog listesinde ve sosyal medya paylaşımlarında görünür.
+   */
+  excerpt?: string | null;
+  image?: (number | null) | Media;
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Boş bırakılırsa başlıktan otomatik üretilir.
+   */
+  slug?: string | null;
+  bodyHtml?: string | null;
+  readingMinutes?: number | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "belgeler".
  */
@@ -231,8 +276,6 @@ export interface Belgeler {
    * PDF'in ilk sayfasının görseli. Boş bırakılırsa kartta "PDF" yazar.
    */
   cover?: (number | null) | Media;
-  prefix?: string | null;
-  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -342,6 +385,10 @@ export interface PayloadLockedDocument {
         value: number | Duyurular;
       } | null)
     | ({
+        relationTo: 'yazilar';
+        value: number | Yazilar;
+      } | null)
+    | ({
         relationTo: 'belgeler';
         value: number | Belgeler;
       } | null)
@@ -418,6 +465,25 @@ export interface DuyurularSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "yazilar_select".
+ */
+export interface YazilarSelect<T extends boolean = true> {
+  title?: T;
+  author?: T;
+  publishedAt?: T;
+  category?: T;
+  excerpt?: T;
+  image?: T;
+  body?: T;
+  slug?: T;
+  bodyHtml?: T;
+  readingMinutes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "belgeler_select".
  */
 export interface BelgelerSelect<T extends boolean = true> {
@@ -426,8 +492,6 @@ export interface BelgelerSelect<T extends boolean = true> {
   donem?: T;
   order?: T;
   cover?: T;
-  prefix?: T;
-  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -473,8 +537,6 @@ export interface DonemlerSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
-  prefix?: T;
-  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

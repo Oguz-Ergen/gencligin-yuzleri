@@ -2,18 +2,20 @@
 import Base from '../layouts/Base.astro';
 import DocCard from '../components/DocCard.astro';
 import DuyuruCard from '../components/DuyuruCard.astro';
-import { getSettings, getDonemler, getBelgeler, getDuyurular } from '../lib/content';
+import YaziCard from '../components/YaziCard.astro';
+import { getSettings, getDonemler, getBelgeler, getDuyurular, getYazilar } from '../lib/content';
 import { t, routes, type Lang } from '../i18n';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const s = t[lang];
 
-const [settings, donemler, belgeler, duyurular] = await Promise.all([
+const [settings, donemler, belgeler, duyurular, yazilar] = await Promise.all([
   getSettings(lang),
   getDonemler(lang),
   getBelgeler(lang),
   getDuyurular(lang, 3),
+  getYazilar(lang, 3),
 ]);
 
 const periodColors = ['var(--p1)', 'var(--p2)', 'var(--p3)'];
@@ -176,6 +178,20 @@ const tilt = (i: number) => `${[-3, 2.5, -1.5, 3, -2.5][i % 5]}deg`;
       );
     })}
   </section>
+
+  {yazilar.length > 0 && (
+    <section class="blog">
+      <div class="wrap">
+        <div class="news-head">
+          <h2 class="poster">{s.blog.latest}</h2>
+          <a href={routes.blog[lang]}>{s.blog.all}</a>
+        </div>
+        <div class="news-grid">
+          {yazilar.map((y, i) => <YaziCard yazi={y} lang={lang} tint={['var(--mint)', 'var(--fire)', 'var(--violet)'][i % 3]} />)}
+        </div>
+      </div>
+    </section>
+  )}
 
   {duyurular.length > 0 && (
     <section class="news">
@@ -537,6 +553,10 @@ const tilt = (i: number) => `${[-3, 2.5, -1.5, 3, -2.5][i % 5]}deg`;
   .pin:hover { transform: rotate(0) translateY(-8px) scale(1.04); }
   .pin :global(.label) { color: inherit; opacity: 0.8; }
   @media (max-width: 960px) { .doc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  /* ——— Blog ——— */
+  .blog { background: var(--mist); padding: clamp(72px, 10vw, 120px) 0; }
+  .blog .poster { font-size: clamp(3rem, 9vw, 7rem); }
 
   /* ——— Duyurular ——— */
   .news { padding: clamp(72px, 10vw, 120px) 0; }
