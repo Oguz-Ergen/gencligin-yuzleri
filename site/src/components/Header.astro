@@ -1,22 +1,27 @@
 ---
+import { t, anchor, routes, type Lang } from '../i18n';
+
+interface Props { lang: Lang; volunteerUrl?: string; switchHref: string }
+const { lang, volunteerUrl, switchHref } = Astro.props;
+const s = t[lang];
 const links = [
-  { href: '/#hakkimizda', label: 'Hakkımızda' },
-  { href: '/#donemler', label: 'Dönemler' },
-  { href: '/belgeler', label: 'Politika Belgeleri' },
-  { href: '/duyurular', label: 'Duyurular' },
-  { href: '/#iletisim', label: 'İletişim' },
+  { href: anchor(lang, 'about'), label: s.nav.about },
+  { href: anchor(lang, 'periods'), label: s.nav.periods },
+  { href: routes.belgeler[lang], label: s.nav.belgeler },
+  { href: routes.duyurular[lang], label: s.nav.duyurular },
+  { href: anchor(lang, 'contact'), label: s.nav.contact },
 ];
 const path = Astro.url.pathname;
-const { volunteerUrl } = Astro.props as { volunteerUrl?: string };
+const other = lang === 'tr' ? 'en' : 'tr';
 ---
 
 <header class="header">
   <div class="wrap bar">
-    <a href="/" class="logo" aria-label="Gençliğin Yüzleri ana sayfa">
+    <a href={routes.home[lang]} class="logo" aria-label={s.homeLabel}>
       <img src="/arsiv/gorseller/gy-logo.png" alt="Gençliğin Yüzleri" width="449" height="281" />
     </a>
 
-    <nav aria-label="Ana menü" class="nav-desktop">
+    <nav aria-label={s.mainMenu} class="nav-desktop">
       <ul>
         {links.map((l) => (
           <li><a href={l.href} aria-current={path === l.href ? 'page' : undefined}>{l.label}</a></li>
@@ -24,13 +29,14 @@ const { volunteerUrl } = Astro.props as { volunteerUrl?: string };
       </ul>
     </nav>
 
-    {volunteerUrl && <a class="join-pill" href={volunteerUrl} target="_blank" rel="noopener">Gönüllü ol</a>}
+    <a class="lang" href={switchHref} hreflang={other} lang={other} aria-label={s.switchTo}>{s.switchShort}</a>
+    {volunteerUrl && <a class="join-pill" href={volunteerUrl} target="_blank" rel="noopener">{s.volunteer}</a>}
 
     <details class="nav-mobile">
-      <summary aria-label="Menüyü aç">
+      <summary aria-label={s.openMenu}>
         <span></span><span></span><span></span>
       </summary>
-      <nav aria-label="Mobil menü">
+      <nav aria-label={s.mainMenu}>
         <ul>
           {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
         </ul>
@@ -64,6 +70,17 @@ const { volunteerUrl } = Astro.props as { volunteerUrl?: string };
   .bar nav.nav-desktop { margin-left: auto; }
   .logo { background: #fff; border-radius: var(--bubble); padding: 4px 10px; transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1); }
   .logo:hover { transform: rotate(-4deg) scale(1.05); }
+  .lang {
+    color: #fff;
+    font-weight: 800;
+    text-decoration: none;
+    padding: 8px 10px;
+    border: 2px solid rgb(255 255 255 / 0.6);
+    border-radius: var(--bubble);
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+  }
+  .lang:hover { background: #fff; color: var(--ink); border-color: #fff; }
   .join-pill {
     background: var(--fire);
     color: var(--ink);
@@ -123,7 +140,18 @@ const { volunteerUrl } = Astro.props as { volunteerUrl?: string };
   @media (max-width: 860px) {
     .nav-desktop { display: none; }
     .nav-mobile { display: block; }
-    .join-pill { margin-left: auto; }
+    .lang {
+    color: #fff;
+    font-weight: 800;
+    text-decoration: none;
+    padding: 8px 10px;
+    border: 2px solid rgb(255 255 255 / 0.6);
+    border-radius: var(--bubble);
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+  }
+  .lang:hover { background: #fff; color: var(--ink); border-color: #fff; }
+  .join-pill { margin-left: auto; }
     .logo img { height: 38px; }
   }
 </style>

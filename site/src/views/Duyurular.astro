@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import DuyuruCard from '../components/DuyuruCard.astro';
+import { getDuyurular } from '../lib/content';
+import { t, routes, anchor, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const s = t[lang];
+const duyurular = await getDuyurular(lang);
+---
+
+<Base title={s.duyurularPage.title} description={s.duyurularPage.description} paths={{ tr: routes.duyurular.tr, en: routes.duyurular.en }}>
+  <header class="page-head">
+    <div class="wrap">
+      <h1>{s.duyurularPage.title}</h1>
+      <p>{s.duyurularPage.intro}</p>
+    </div>
+  </header>
+  <section class="page-body">
+    <div class="wrap">
+      {duyurular.length === 0 ? (
+        <p class="empty">{s.duyurularPage.empty} <a href={anchor(lang, 'contact')}>{s.duyurularPage.emptyLink}</a>.</p>
+      ) : (
+        <div class="grid">{duyurular.map((d) => <DuyuruCard duyuru={d} lang={lang} />)}</div>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .empty { font-size: 1.2rem; color: var(--ink-soft); }
+  .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 24px; }
+  @media (max-width: 960px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+</style>

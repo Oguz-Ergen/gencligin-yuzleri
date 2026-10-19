@@ -15,9 +15,10 @@ export const Donemler: CollectionConfig = {
         { name: 'years', label: 'Yıllar', type: 'text', admin: { description: 'İsteğe bağlı. Örn: 2024-2025' } },
       ],
     },
-    { name: 'title', label: 'Başlık', type: 'text', required: true },
+    { name: 'title', localized: true, label: 'Başlık', type: 'text', required: true },
     {
       name: 'intro',
+      localized: true,
       label: 'Açıklama',
       type: 'textarea',
       admin: { description: 'Paragrafları boş bir satırla ayırın.', rows: 6 },
@@ -36,16 +37,16 @@ export const Donemler: CollectionConfig = {
       labels: { singular: 'Faaliyet', plural: 'Faaliyetler' },
       admin: { description: 'Numaralı kartlar olarak gösterilir (01, 02, …).' },
       fields: [
-        { name: 'title', label: 'Başlık', type: 'text', required: true },
-        { name: 'text', label: 'Açıklama', type: 'textarea' },
+        { name: 'title', localized: true, label: 'Başlık', type: 'text', required: true },
+        { name: 'text', localized: true, label: 'Açıklama', type: 'textarea' },
       ],
     },
     {
       type: 'collapsible',
       label: 'Öne çıkan çıktı',
       fields: [
-        { name: 'highlightTitle', label: 'Başlık', type: 'text', admin: { description: 'Örn: 67 Belediye Başkanı Adayı ile İyi Niyet Sözleşmesi İmzalandı' } },
-        { name: 'highlightText', label: 'Açıklama', type: 'textarea' },
+        { name: 'highlightTitle', localized: true, label: 'Başlık', type: 'text', admin: { description: 'Örn: 67 Belediye Başkanı Adayı ile İyi Niyet Sözleşmesi İmzalandı' } },
+        { name: 'highlightText', localized: true, label: 'Açıklama', type: 'textarea' },
       ],
     },
   ],

@@ -10,7 +10,8 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation payload run src/seed.ts",
-    "migrate:create": "cross-env GCS_BUCKET=sema-icin NODE_OPTIONS=--no-deprecation payload migrate:create"
+    "migrate:create": "cross-env GCS_BUCKET=sema-icin NODE_OPTIONS=--no-deprecation payload migrate:create",
+    "seed:en": "cross-env NODE_OPTIONS=--no-deprecation payload run src/seed-en.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.90.2",

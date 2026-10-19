@@ -19,6 +19,7 @@ export const Media: CollectionConfig = {
   fields: [
     {
       name: 'alt',
+      localized: true,
       label: 'Görsel açıklaması',
       type: 'text',
       required: true,

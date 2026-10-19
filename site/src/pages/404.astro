@@ -1,18 +1,23 @@
 ---
 import Base from '../layouts/Base.astro';
+import { t, routes, langFromPath } from '../i18n';
+
 Astro.response.status = 404;
+// Yeniden yönlendirilen isteklerde orijinal adres dili belirler.
+const lang = langFromPath(Astro.originPathname ?? Astro.url.pathname);
+const s = t[lang].notFound;
 ---
 
-<Base title="Sayfa bulunamadı">
+<Base title={s.title} lang={lang}>
   <header class="page-head">
     <div class="wrap">
-      <h1>Bu sayfa bulunamadı.</h1>
-      <p>Bağlantı değişmiş ya da sayfa kaldırılmış olabilir.</p>
+      <h1>{s.title}</h1>
+      <p>{s.text}</p>
     </div>
   </header>
   <section class="page-body">
     <div class="wrap">
-      <a class="btn" href="/">Ana sayfaya dön</a>
+      <a class="btn" href={routes.home[lang]}>{s.back}</a>
     </div>
   </section>
 </Base>

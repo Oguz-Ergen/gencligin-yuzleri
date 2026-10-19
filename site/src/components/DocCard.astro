@@ -1,11 +1,12 @@
 ---
 import type { Belge } from '../lib/content';
+import { t, type Lang } from '../i18n';
 
-interface Props { belge: Belge }
-const { belge } = Astro.props;
+interface Props { belge: Belge; lang?: Lang }
+const { belge, lang = 'tr' } = Astro.props;
 ---
 
-<a class="doc" href={belge.fileUrl} target="_blank" rel="noopener">
+<a class="doc" href={belge.fileUrl} target="_blank" rel="noopener" hreflang="tr">
   <span class="paper">
     {belge.cover
       ? <img src={belge.cover.url(480)} alt="" loading="lazy" width="396" height="560" />
@@ -13,7 +14,7 @@ const { belge } = Astro.props;
   </span>
   {belge.label && <span class="label">{belge.label}</span>}
   <span class="title">{belge.title}</span>
-  <span class="visually-hidden">(PDF, yeni sekmede açılır)</span>
+  <span class="visually-hidden">{t[lang].pdf}</span>
 </a>
 
 <style>

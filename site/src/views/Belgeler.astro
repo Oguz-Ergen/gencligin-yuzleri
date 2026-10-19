@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import DocCard from '../components/DocCard.astro';
+import { getBelgeler, getDonemler } from '../lib/content';
+import { t, routes, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const s = t[lang];
+
+const [belgeler, donemler] = await Promise.all([getBelgeler(lang), getDonemler(lang)]);
+const groups = donemler
+  .map((d) => ({ donem: d, docs: belgeler.filter((b) => b.donem === d.number) }))
+  .filter((g) => g.docs.length > 0);
+const other = belgeler.filter((b) => !donemler.some((d) => d.number === b.donem));
+---
+
+<Base title={s.belgelerPage.title} description={s.belgelerPage.description} paths={{ tr: routes.belgeler.tr, en: routes.belgeler.en }}>
+  <header class="page-head">
+    <div class="wrap">
+      <h1>{s.belgelerPage.title}</h1>
+      <p>{s.belgelerPage.intro}</p>
+    </div>
+  </header>
+  <section class="page-body">
+    <div class="wrap">
+      {groups.map((g) => (
+        <section class="group" aria-labelledby={`g-${g.donem.number}`}>
+          <h2 id={`g-${g.donem.number}`}>{s.period(g.donem.number)}: <span>{g.donem.title}</span></h2>
+          <div class="grid">{g.docs.map((b) => <DocCard belge={b} lang={lang} />)}</div>
+        </section>
+      ))}
+
+      {other.length > 0 && (
+        <section class="group">
+          <h2>{s.belgelerPage.other}</h2>
+          <div class="grid">{other.map((b) => <DocCard belge={b} lang={lang} />)}</div>
+        </section>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .group + .group { margin-top: 72px; }
+  .group h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin-bottom: 22px; }
+  .group h2 span { color: var(--ink-soft); }
+  .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px 20px; }
+  @media (max-width: 960px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>

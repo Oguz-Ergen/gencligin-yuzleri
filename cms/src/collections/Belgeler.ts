@@ -10,8 +10,8 @@ export const Belgeler: CollectionConfig = {
   access: { read: anyone, create: loggedIn, update: loggedIn, delete: loggedIn },
   upload: { mimeTypes: ['application/pdf'] },
   fields: [
-    { name: 'title', label: 'Başlık', type: 'text', required: true },
-    { name: 'label', label: 'Üst etiket', type: 'text', admin: { description: 'Şehir ya da seri adı. Örn: İzmir, Politika Önerisi II' } },
+    { name: 'title', localized: true, label: 'Başlık', type: 'text', required: true },
+    { name: 'label', localized: true, label: 'Üst etiket', type: 'text', admin: { description: 'Şehir ya da seri adı. Örn: İzmir, Politika Önerisi II' } },
     {
       type: 'row',
       fields: [

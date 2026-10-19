@@ -1,8 +1,9 @@
 ---
 import { formatDate, type Duyuru } from '../lib/content';
+import { duyuruPath, categoryLabel, type Lang } from '../i18n';
 
-interface Props { duyuru: Duyuru }
-const { duyuru } = Astro.props;
+interface Props { duyuru: Duyuru; lang?: Lang }
+const { duyuru, lang = 'tr' } = Astro.props;
 ---
 
 <article class="item">
@@ -10,10 +11,10 @@ const { duyuru } = Astro.props;
     <img src={duyuru.image.url(720)} alt={duyuru.image.alt} loading="lazy" width="720" height="405" />
   )}
   <p class="meta">
-    {duyuru.category && <span class="tag">{duyuru.category}</span>}
-    <time datetime={duyuru.date}>{formatDate(duyuru.date)}</time>
+    {duyuru.category && <span class="tag">{categoryLabel(lang, duyuru.category)}</span>}
+    <time datetime={duyuru.date}>{formatDate(duyuru.date, lang)}</time>
   </p>
-  <h3><a href={`/duyurular/${duyuru.slug}`}>{duyuru.title}</a></h3>
+  <h3><a href={duyuruPath(lang, duyuru.slug)}>{duyuru.title}</a></h3>
   {duyuru.summary && <p class="summary">{duyuru.summary}</p>}
 </article>
 

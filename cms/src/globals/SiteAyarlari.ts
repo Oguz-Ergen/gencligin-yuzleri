@@ -22,8 +22,8 @@ export const SiteAyarlari: GlobalConfig = {
         {
           label: 'Giriş',
           fields: [
-            { name: 'slogan', label: 'Slogan', type: 'text', required: true },
-            { name: 'heroText', label: 'Giriş metni', type: 'textarea' },
+            { name: 'slogan', localized: true, label: 'Slogan', type: 'text', required: true },
+            { name: 'heroText', localized: true, label: 'Giriş metni', type: 'textarea' },
             {
               ...photos('heroImages', 'Giriş fotoğrafları'),
               admin: { description: 'Ana sayfanın üstünde sırayla değişir. Yatay, yüksek çözünürlüklü fotoğraflar kullanın.' },
@@ -39,7 +39,7 @@ export const SiteAyarlari: GlobalConfig = {
                   type: 'row',
                   fields: [
                     { name: 'value', label: 'Sayı', type: 'text', required: true, admin: { description: 'Örn: 25, 3K+, 300+' } },
-                    { name: 'label', label: 'Açıklama', type: 'text', required: true },
+                    { name: 'label', localized: true, label: 'Açıklama', type: 'text', required: true },
                   ],
                 },
               ],
@@ -49,8 +49,8 @@ export const SiteAyarlari: GlobalConfig = {
         {
           label: 'Hakkımızda',
           fields: [
-            { name: 'aboutTitle', label: 'Başlık', type: 'text' },
-            { name: 'aboutText', label: 'Metin', type: 'textarea', admin: { description: 'Paragrafları boş bir satırla ayırın.', rows: 8 } },
+            { name: 'aboutTitle', localized: true, label: 'Başlık', type: 'text' },
+            { name: 'aboutText', localized: true, label: 'Metin', type: 'textarea', admin: { description: 'Paragrafları boş bir satırla ayırın.', rows: 8 } },
             photos('aboutImages', 'Fotoğraflar', 2),
           ],
         },

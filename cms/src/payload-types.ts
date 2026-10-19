@@ -92,14 +92,14 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('tr' | 'en') | ('tr' | 'en')[];
   globals: {
     'site-ayarlari': SiteAyarlari;
   };
   globalsSelect: {
     'site-ayarlari': SiteAyarlariSelect<false> | SiteAyarlariSelect<true>;
   };
-  locale: null;
+  locale: 'tr' | 'en';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -179,6 +179,8 @@ export interface Media {
    * Görseli göremeyenler için kısa açıklama. Örn: "İzmir forumunda atölye çalışması"
    */
   alt: string;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -229,6 +231,8 @@ export interface Belgeler {
    * PDF'in ilk sayfasının görseli. Boş bırakılırsa kartta "PDF" yazar.
    */
   cover?: (number | null) | Media;
+  prefix?: string | null;
+  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -422,6 +426,8 @@ export interface BelgelerSelect<T extends boolean = true> {
   donem?: T;
   order?: T;
   cover?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -467,6 +473,8 @@ export interface DonemlerSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  prefix?: T;
+  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

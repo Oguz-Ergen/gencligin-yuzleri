@@ -1,8 +1,10 @@
 ---
 import type { Settings } from '../lib/content';
+import { t, routes, type Lang } from '../i18n';
 
-interface Props { settings: Settings }
-const { settings } = Astro.props;
+interface Props { lang: Lang; settings: Settings }
+const { lang, settings } = Astro.props;
+const s = t[lang];
 const year = new Date().getFullYear();
 ---
 
@@ -12,21 +14,21 @@ const year = new Date().getFullYear();
       <a href="https://sosyaliklim.org" target="_blank" rel="noopener" class="org-logo">
         <img src="/arsiv/gorseller/sosyal-iklim-logo-beyaz.png" alt="Sosyal İklim Derneği" width="96" height="96" loading="lazy" />
       </a>
-      <p>Gençliğin Yüzleri, <a href="https://sosyaliklim.org" target="_blank" rel="noopener">Sosyal İklim Derneği</a> tarafından yürütülen bir gençlik programıdır.</p>
+      <p>{s.footer.before}<a href="https://sosyaliklim.org" target="_blank" rel="noopener">Sosyal İklim Derneği</a>{s.footer.after}</p>
     </div>
 
     <div>
-      <h2 class="h">İletişim</h2>
+      <h2 class="h">{s.footer.contact}</h2>
       {settings.email && <p><a href={`mailto:${settings.email}`}>{settings.email}</a></p>}
       {settings.address && <p>{settings.address}</p>}
     </div>
 
     <div>
-      <h2 class="h">Keşfet</h2>
+      <h2 class="h">{s.footer.explore}</h2>
       <ul>
-        <li><a href="/belgeler">Politika Belgeleri</a></li>
-        <li><a href="/duyurular">Duyurular</a></li>
-        {settings.volunteerUrl && <li><a href={settings.volunteerUrl} target="_blank" rel="noopener">Gönüllü Ol</a></li>}
+        <li><a href={routes.belgeler[lang]}>{s.nav.belgeler}</a></li>
+        <li><a href={routes.duyurular[lang]}>{s.nav.duyurular}</a></li>
+        {settings.volunteerUrl && <li><a href={settings.volunteerUrl} target="_blank" rel="noopener">{s.volunteer}</a></li>}
         {settings.social.map((s) => (
           <li><a href={s.url} target="_blank" rel="noopener">{s.platform}</a></li>
         ))}

@@ -19,7 +19,7 @@ export const Duyurular: CollectionConfig = {
   versions: { drafts: true, maxPerDoc: 20 },
   access: { read: publishedOrLoggedIn, create: loggedIn, update: loggedIn, delete: loggedIn },
   fields: [
-    { name: 'title', label: 'Başlık', type: 'text', required: true, maxLength: 120 },
+    { name: 'title', localized: true, label: 'Başlık', type: 'text', required: true, maxLength: 120 },
     {
       type: 'row',
       fields: [
@@ -41,13 +41,14 @@ export const Duyurular: CollectionConfig = {
     },
     {
       name: 'summary',
+      localized: true,
       label: 'Kısa özet',
       type: 'textarea',
       maxLength: 240,
       admin: { description: 'Kartlarda ve sosyal medya paylaşımlarında görünür.' },
     },
     { name: 'image', label: 'Kapak görseli', type: 'upload', relationTo: 'media' },
-    { name: 'body', label: 'Metin', type: 'richText' },
+    { name: 'body', localized: true, label: 'Metin', type: 'richText' },
     {
       name: 'slug',
       label: 'Bağlantı adresi',

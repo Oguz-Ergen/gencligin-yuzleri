@@ -1,0 +1,9 @@
+---
+import Duyuru from '../../../views/Duyuru.astro';
+import { getDuyuru } from '../../../lib/content';
+
+const duyuru = await getDuyuru(Astro.params.slug!, 'en');
+if (!duyuru) return Astro.rewrite('/404');
+---
+
+<Duyuru lang="en" duyuru={duyuru} />

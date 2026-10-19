@@ -1,5 +1,6 @@
 // Site içeriği: CMS_URL tanımlıysa kendi panelimizden (Payload REST API), değilse yerel seed.json'dan okunur.
 import seed from '../data/seed.json';
+import { t, type Lang } from '../i18n';
 
 export type Img = { alt: string; url: (width: number) => string };
 export type Stat = { value: string; label: string };
@@ -88,12 +89,12 @@ const paragraphs = (text?: string) =>
 
 // --- sorgular ---
 
-export async function getSettings(): Promise<Settings> {
+export async function getSettings(lang: Lang = 'tr'): Promise<Settings> {
   if (!cmsUrl) {
     const s = seed.settings;
     return { ...s, heroImages: s.heroImages.map(localImg), aboutImages: s.aboutImages.map(localImg) };
   }
-  const s = await api('/api/globals/site-ayarlari?depth=1');
+  const s = await api(`/api/globals/site-ayarlari?depth=1&locale=${lang}`);
   const imgs = (list: any[] = []) => list.map((i) => cmsImg(i.image)).filter((i): i is Img => Boolean(i));
   return {
     slogan: s.slogan ?? '',
@@ -110,9 +111,9 @@ export async function getSettings(): Promise<Settings> {
   };
 }
 
-export async function getDonemler(): Promise<Donem[]> {
+export async function getDonemler(lang: Lang = 'tr'): Promise<Donem[]> {
   if (!cmsUrl) return seed.donemler as Donem[];
-  const { docs } = await api('/api/donemler?sort=number&limit=100&depth=0');
+  const { docs } = await api(`/api/donemler?sort=number&limit=100&depth=0&locale=${lang}`);
   return docs.map((d: any) => ({
     number: d.number,
     years: d.years || undefined,
@@ -124,7 +125,7 @@ export async function getDonemler(): Promise<Donem[]> {
   }));
 }
 
-export async function getBelgeler(): Promise<Belge[]> {
+export async function getBelgeler(lang: Lang = 'tr'): Promise<Belge[]> {
   if (!cmsUrl) {
     return seed.belgeler.map((b) => ({
       title: b.title,
@@ -134,7 +135,7 @@ export async function getBelgeler(): Promise<Belge[]> {
       cover: localImg({ path: b.cover, alt: `${b.label}: ${b.title} kapağı` }),
     }));
   }
-  const { docs } = await api('/api/belgeler?sort=order&limit=500&depth=1');
+  const { docs } = await api(`/api/belgeler?sort=order&limit=500&depth=1&locale=${lang}`);
   return docs
     .filter((b: any) => b.url)
     .map((b: any) => ({
@@ -160,17 +161,17 @@ function toDuyuru(d: any): Duyuru {
 }
 
 // Ziyaretçiler API'den yalnızca yayınlanmış duyuruları alır (panel erişim kuralı).
-export async function getDuyurular(limit = 100): Promise<Duyuru[]> {
+export async function getDuyurular(lang: Lang = 'tr', limit = 100): Promise<Duyuru[]> {
   if (!cmsUrl) return [];
-  const { docs } = await api(`/api/duyurular?sort=-date&limit=${limit}&depth=1`);
+  const { docs } = await api(`/api/duyurular?sort=-date&limit=${limit}&depth=1&locale=${lang}`);
   return docs.filter((d: any) => d.slug).map(toDuyuru);
 }
 
-export async function getDuyuru(slug: string): Promise<Duyuru | null> {
+export async function getDuyuru(slug: string, lang: Lang = 'tr'): Promise<Duyuru | null> {
   if (!cmsUrl) return null;
-  const { docs } = await api(`/api/duyurular?where[slug][equals]=${encodeURIComponent(slug)}&limit=1&depth=1`);
+  const { docs } = await api(`/api/duyurular?where[slug][equals]=${encodeURIComponent(slug)}&limit=1&depth=1&locale=${lang}`);
   return docs[0] ? toDuyuru(docs[0]) : null;
 }
 
-export const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Istanbul' });
+export const formatDate = (iso: string, lang: Lang = 'tr') =>
+  new Date(iso).toLocaleDateString(t[lang].locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Istanbul' });

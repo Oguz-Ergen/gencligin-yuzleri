@@ -45,6 +45,15 @@ export default buildConfig({
     supportedLanguages: { tr },
     fallbackLanguage: 'tr',
   },
+  // İçerik dilleri: çevirisi girilmemiş alanlarda Türkçe metin gösterilir.
+  localization: {
+    locales: [
+      { code: 'tr', label: 'Türkçe' },
+      { code: 'en', label: 'English' },
+    ],
+    defaultLocale: 'tr',
+    fallback: true,
+  },
   collections: [Duyurular, Belgeler, Donemler, Media, Users],
   globals: [SiteAyarlari],
   editor: lexicalEditor(),

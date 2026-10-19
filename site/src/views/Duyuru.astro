@@ -1,0 +1,41 @@
+---
+import Base from '../layouts/Base.astro';
+import { formatDate, type Duyuru } from '../lib/content';
+import { t, routes, duyuruPath, categoryLabel, type Lang } from '../i18n';
+
+interface Props { lang: Lang; duyuru: Duyuru }
+const { lang, duyuru } = Astro.props;
+const s = t[lang];
+---
+
+<Base
+  title={duyuru.title}
+  description={duyuru.summary}
+  image={duyuru.image?.url(1200)}
+  paths={{ tr: duyuruPath('tr', duyuru.slug), en: duyuruPath('en', duyuru.slug) }}
+>
+  <article class="page-body">
+    <div class="wrap narrow">
+      <a class="back" href={routes.duyurular[lang]}>{s.allNews}</a>
+      <p class="meta">
+        {duyuru.category && <span class="tag">{categoryLabel(lang, duyuru.category)}</span>}
+        <time datetime={duyuru.date}>{formatDate(duyuru.date, lang)}</time>
+      </p>
+      <h1>{duyuru.title}</h1>
+      {duyuru.summary && <p class="lead">{duyuru.summary}</p>}
+      {duyuru.image && (
+        <img class="cover" src={duyuru.image.url(1400)} alt={duyuru.image.alt} width="1400" height="788" />
+      )}
+      <div class="prose" set:html={duyuru.bodyHtml} />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .narrow { max-width: 820px; }
+  .back { font-weight: 600; text-decoration: none; color: var(--blue); }
+  .meta { display: flex; align-items: center; gap: 10px; margin-top: 28px; color: var(--ink-soft); font-size: 0.95rem; }
+  .tag { background: var(--mist); color: var(--ink); font-weight: 600; padding: 2px 10px 3px; border-radius: 12px 12px 12px 3px; }
+  h1 { font-size: clamp(2.2rem, 5.5vw, 3.8rem); }
+  .cover { width: 100%; height: auto; border-radius: 14px; margin: 32px 0 40px; }
+</style>

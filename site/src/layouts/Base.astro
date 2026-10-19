@@ -3,16 +3,22 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { getSettings } from '../lib/content';
+import { t, langFromPath, routes, type Lang } from '../i18n';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  /** Bu sayfanın her dildeki adresi (dil seçici ve hreflang için). */
+  paths?: Partial<Record<Lang, string>>;
+  lang?: Lang;
 }
 
-const settings = await getSettings();
+const lang = Astro.props.lang ?? langFromPath(Astro.url.pathname);
+const settings = await getSettings(lang);
 const siteName = 'Gençliğin Yüzleri';
-const { title, description = settings.heroText, image } = Astro.props;
+const { title, description = settings.heroText, image, paths = { tr: routes.home.tr, en: routes.home.en } } = Astro.props;
+const other: Lang = lang === 'tr' ? 'en' : 'tr';
 const fullTitle = title ? `${title} | ${siteName}` : `${siteName} | ${settings.slogan}`;
 const ogImage = new URL(image ?? settings.heroImages[0]?.url(1200) ?? '/arsiv/gorseller/gy-logo.png', Astro.site);
 
@@ -21,16 +27,18 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60, stale-while-rev
 ---
 
 <!doctype html>
-<html lang="tr">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    {Object.entries(paths).map(([l, p]) => <link rel="alternate" hreflang={l} href={new URL(p!, Astro.site)} />)}
+    {paths.tr && <link rel="alternate" hreflang="x-default" href={new URL(paths.tr, Astro.site)} />}
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:locale" content={t[lang].ogLocale} />
     <meta property="og:site_name" content={siteName} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
@@ -40,12 +48,12 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60, stale-while-rev
     <script is:inline>document.documentElement.classList.add('js')</script>
   </head>
   <body>
-    <a class="skip" href="#icerik">İçeriğe geç</a>
-    <Header volunteerUrl={settings.volunteerUrl} />
+    <a class="skip" href="#icerik">{t[lang].skip}</a>
+    <Header lang={lang} volunteerUrl={settings.volunteerUrl} switchHref={paths[other] ?? routes.home[other]} />
     <main id="icerik">
       <slot />
     </main>
-    <Footer settings={settings} />
+    <Footer lang={lang} settings={settings} />
     <script>
       // Kaydırınca beliren öğeler ve sıfırdan sayan rakamlar.
       const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
