@@ -48,7 +48,7 @@ const path = Astro.url.pathname;
     position: sticky;
     top: 0;
     z-index: 50;
-    background: color-mix(in srgb, var(--cream) 88%, transparent);
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
@@ -61,16 +61,16 @@ const path = Astro.url.pathname;
   .logo img { height: 52px; width: auto; }
 
   ul { list-style: none; margin: 0; padding: 0; }
-  .nav-desktop ul { display: flex; gap: clamp(14px, 2.4vw, 32px); }
+  .nav-desktop ul { display: flex; gap: 4px; }
   .nav-desktop a {
     text-decoration: none;
     font-weight: 600;
-    font-size: 0.95rem;
-    padding: 6px 0;
-    border-bottom: 2px solid transparent;
+    font-size: 1rem;
+    padding: 8px 14px;
+    border-radius: var(--bubble);
   }
-  .nav-desktop a:hover,
-  .nav-desktop a[aria-current='page'] { border-color: var(--orange); }
+  .nav-desktop a:hover { background: var(--mist); }
+  .nav-desktop a[aria-current='page'] { background: var(--ink); color: #fff; }
 
   .nav-mobile { display: none; position: relative; }
   .nav-mobile summary {
@@ -90,8 +90,8 @@ const path = Astro.url.pathname;
     top: 52px;
     background: var(--paper);
     border: 1px solid var(--line);
-    border-radius: 14px;
-    box-shadow: 0 16px 40px rgb(29 34 64 / 0.15);
+    border-radius: var(--bubble-r);
+    box-shadow: 0 12px 32px rgb(23 32 74 / 0.14);
     padding: 8px;
     min-width: 220px;
   }
@@ -102,7 +102,7 @@ const path = Astro.url.pathname;
     font-weight: 600;
     border-radius: 8px;
   }
-  .nav-mobile a:hover { background: var(--cream); }
+  .nav-mobile a:hover { background: var(--mist); }
 
   @media (max-width: 860px) {
     .nav-desktop { display: none; }

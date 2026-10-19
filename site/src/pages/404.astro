@@ -4,12 +4,15 @@ Astro.response.status = 404;
 ---
 
 <Base title="Sayfa bulunamadı">
-  <section class="section">
+  <header class="page-head">
     <div class="wrap">
-      <span class="eyebrow">404</span>
-      <h1>Aradığın sayfa burada değil.</h1>
-      <p class="lead">Bağlantı değişmiş ya da sayfa kaldırılmış olabilir.</p>
-      <p><a class="btn" href="/">Ana sayfaya dön</a></p>
+      <h1>Bu sayfa bulunamadı.</h1>
+      <p>Bağlantı değişmiş ya da sayfa kaldırılmış olabilir.</p>
+    </div>
+  </header>
+  <section class="page-body">
+    <div class="wrap">
+      <a class="btn" href="/">Ana sayfaya dön</a>
     </div>
   </section>
 </Base>

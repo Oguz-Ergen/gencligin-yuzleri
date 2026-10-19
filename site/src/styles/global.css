@@ -1,125 +1,116 @@
-@import '@fontsource/anton';
-@import '@fontsource-variable/inter';
+@import '@fontsource-variable/bricolage-grotesque/standard.css';
 
+/*
+  Gençliğin Yüzleri — tasarım belirteçleri
+  Fikir: "söz". Konuşma balonu (logonun kendisi) sayfanın tek yapısal motifi.
+  Renkler logodan ve politika belgesi kapaklarından gelir; her dönemin kendi rengi vardır.
+*/
 :root {
-  --ink: #1d2240;
-  --ink-soft: #4a4f6b;
-  --navy: #2f4f86;
-  --blue: #4a72c2;
-  --teal: #3f9a98;
-  --purple: #b65ad8;
-  --orange: #ee7d33;
-  --orange-deep: #c2541a; /* açık zeminde metin/buton için (AA kontrast) */
-  --red: #b5474a;
-  --cream: #fbf7f1;
+  --blue: #3456a6; /* logo balonu, giriş zemini */
+  --blue-soft: #dbe4f7; /* mavi zemin üstünde ikincil metin */
+  --ink: #17204a;
+  --ink-soft: #4a5275;
   --paper: #ffffff;
-  --line: #e6dfd4;
+  --mist: #eef2fa;
+  --line: #d7deee;
 
-  --display: 'Anton', 'Impact', sans-serif;
-  --body: 'Inter Variable', system-ui, -apple-system, sans-serif;
+  /* dönem renkleri (kapaklardan) */
+  --p1: #b5474a;
+  --p2: #2f4f86;
+  --p3: #25726f;
 
-  --wrap: 1180px;
+  /* balon dolguları (logodaki küçük balonlardan) */
+  --mint: #9fd3cf;
+  --lilac: #e7b6f5;
+  --apricot: #f4a65e;
+
+  --font: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+
+  --wrap: 1160px;
   --gutter: clamp(16px, 4vw, 40px);
-  --radius: 18px;
+  /* konuşma balonu: üç köşe yuvarlak, "konuşan" köşe sivri */
+  --bubble: 26px 26px 26px 6px;
+  --bubble-r: 26px 26px 6px 26px;
 }
 
 *,
 *::before,
 *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; scroll-padding-top: 88px; }
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
   margin: 0;
-  background: var(--cream);
+  background: var(--paper);
   color: var(--ink);
-  font-family: var(--body);
+  font-family: var(--font);
+  font-optical-sizing: auto;
   font-size: 1.0625rem;
-  line-height: 1.65;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 
 img { max-width: 100%; display: block; }
-a { color: inherit; }
+a { color: inherit; text-underline-offset: 0.18em; text-decoration-thickness: 0.08em; }
 
+/* Tip ölçeği: başlıklar dar ve sıkı, metin geniş ve rahat */
 h1, h2, h3 {
-  font-family: var(--display);
-  font-weight: 400;
-  line-height: 1.14; /* büyük harf Türkçe noktalar/çengeller satırlara çarpmasın */
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-  margin: 0 0 0.5em;
+  margin: 0 0 0.45em;
+  font-weight: 750;
+  font-stretch: 88%;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
-h1 { font-size: clamp(2.8rem, 8vw, 6rem); }
-h2 { font-size: clamp(2rem, 4.6vw, 3.4rem); }
-h3 { font-size: clamp(1.25rem, 2.2vw, 1.6rem); letter-spacing: 0.02em; }
-p { margin: 0 0 1em; }
+h1 { font-size: clamp(3.3rem, 9vw, 7.25rem); font-weight: 800; letter-spacing: -0.035em; line-height: 0.95; }
+h2 { font-size: clamp(2rem, 4.4vw, 3.5rem); }
+h3 { font-size: clamp(1.3rem, 2vw, 1.6rem); letter-spacing: -0.01em; line-height: 1.15; }
+p { margin: 0 0 1em; max-width: 68ch; }
 
 .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
-.section { padding: clamp(64px, 10vw, 120px) 0; }
 
-.eyebrow {
-  display: inline-block;
-  font-family: var(--body);
-  font-weight: 700;
-  font-size: 0.8rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--orange-deep);
-  margin-bottom: 0.9rem;
-}
-
-.lead { font-size: clamp(1.1rem, 1.6vw, 1.3rem); color: var(--ink-soft); max-width: 62ch; }
+.lead { font-size: clamp(1.15rem, 1.7vw, 1.35rem); line-height: 1.5; color: var(--ink-soft); max-width: 58ch; }
 
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5em;
-  padding: 0.85em 1.4em;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 0.98rem;
+  padding: 0.8em 1.35em;
+  border-radius: var(--bubble);
+  font-weight: 650;
+  font-size: 1rem;
   text-decoration: none;
-  background: var(--orange-deep);
+  background: var(--ink);
   color: #fff;
-  border: 2px solid var(--orange-deep);
-  transition: transform 0.15s ease, background 0.15s ease;
+  border: 2px solid var(--ink);
 }
-.btn:hover { transform: translateY(-2px); }
-.btn--ghost { background: transparent; color: inherit; border-color: currentColor; }
+.btn:hover { background: var(--blue); border-color: var(--blue); }
+.btn--line { background: transparent; color: inherit; border-color: currentColor; }
+.btn--line:hover { background: rgb(255 255 255 / 0.12); border-color: currentColor; }
 .btn--light { background: #fff; color: var(--ink); border-color: #fff; }
+.btn--light:hover { background: var(--mist); border-color: var(--mist); }
 
-.chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
-.chips li {
-  padding: 0.3em 0.85em;
-  border-radius: 999px;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  font-size: 0.9rem;
-  font-weight: 600;
-}
+:focus-visible { outline: 3px solid var(--apricot); outline-offset: 3px; }
 
-:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; border-radius: 4px; }
-
-.visually-hidden {
-  position: absolute !important;
-  width: 1px; height: 1px;
-  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
-}
-
-/* Duyuru gövdesi (Sanity zengin metin) */
-.prose { max-width: 70ch; }
-.prose h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); margin-top: 1.4em; }
+/* Duyuru gövdesi (panelden gelen zengin metin) */
+.prose { max-width: 66ch; font-size: 1.125rem; line-height: 1.7; }
+.prose h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); margin-top: 1.5em; }
 .prose h3 { margin-top: 1.4em; }
-.prose a { color: var(--navy); text-underline-offset: 3px; }
+.prose a { color: var(--blue); }
 .prose figure { margin: 2em 0; }
-.prose figure img { border-radius: var(--radius); }
-.prose figcaption { font-size: 0.9rem; color: var(--ink-soft); margin-top: 0.6em; }
+.prose figure img { border-radius: 14px; }
+.prose figcaption { font-size: 0.92rem; color: var(--ink-soft); margin-top: 0.6em; }
 .prose blockquote {
-  margin: 1.6em 0;
-  padding: 0.2em 0 0.2em 1.2em;
-  border-left: 4px solid var(--purple);
+  margin: 1.8em 0;
+  padding: 1.1em 1.4em;
+  background: var(--mist);
+  border-radius: var(--bubble);
   font-size: 1.15em;
 }
+.prose blockquote p:last-child { margin-bottom: 0; }
+
+/* Alt sayfa başlığı: girişin sade hali */
+.page-head { background: var(--blue); color: #fff; padding: clamp(48px, 8vw, 96px) 0 clamp(40px, 6vw, 72px); }
+.page-head h1 { font-size: clamp(2.6rem, 7vw, 5rem); margin-bottom: 0.3em; }
+.page-head p { color: var(--blue-soft); font-size: 1.2rem; max-width: 52ch; margin: 0; }
+.page-body { padding: clamp(48px, 7vw, 88px) 0 clamp(72px, 10vw, 120px); }

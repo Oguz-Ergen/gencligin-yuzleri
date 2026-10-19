@@ -11,327 +11,346 @@ const [settings, donemler, belgeler, duyurular] = await Promise.all([
   getDuyurular(3),
 ]);
 
-const accents = ['var(--orange)', 'var(--purple)', 'var(--teal)', 'var(--blue)'];
-const pad = (n: number) => String(n).padStart(2, '0');
+// Her dönemin rengi politika belgesi kapaklarından gelir.
+const periodColor = (n: number) => ['var(--p1)', 'var(--p2)', 'var(--p3)'][(n - 1) % 3];
+// Giriş balonları: forumlarda gençlerin gündeme getirdiği konular (politika belgeleri).
+const fills = ['#fff', 'var(--mint)', 'var(--lilac)', 'var(--apricot)'];
+const photos = [...settings.heroImages, ...settings.aboutImages].slice(0, 5);
+const lower = (s: string) => s.toLocaleLowerCase('tr-TR');
 ---
 
 <Base>
-  <!-- Giriş -->
   <section class="hero">
-    <div class="slides" aria-hidden="true">
-      {settings.heroImages.map((img, i) => (
-        <img
-          src={img.url(1920)}
-          alt=""
-          class:list={{ active: i === 0 }}
-          loading={i === 0 ? 'eager' : 'lazy'}
-          fetchpriority={i === 0 ? 'high' : undefined}
-        />
-      ))}
-    </div>
-    <div class="wrap hero-inner">
-      <span class="eyebrow">Gençliğin Yüzleri</span>
-      <h1>{settings.slogan}</h1>
-      <p class="hero-text">{settings.heroText}</p>
-      <div class="hero-actions">
-        <a class="btn" href="#donemler">Neler yaptık?</a>
-        <a class="btn btn--ghost" href="/belgeler">Politika belgeleri</a>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1>{settings.slogan}</h1>
+        <p class="hero-text">{settings.heroText}</p>
+        <div class="hero-actions">
+          <a class="btn btn--light" href="#donemler">Dönemleri incele</a>
+          <a class="btn btn--line" href="/belgeler">Politika belgeleri</a>
+        </div>
       </div>
+
+      {belgeler.length > 0 && (
+        <div class="voices">
+          <p class="voices-caption">Forumlarda gençlerin masaya koyduğu konular</p>
+          <ul>
+            {belgeler.map((b, i) => (
+              <li style={`--i:${i}; --fill:${fills[i % fills.length]}`} class:list={{ right: i % 2 === 1 }}>
+                <a href={b.fileUrl} target="_blank" rel="noopener">
+                  {b.label && <span class="where">{b.label}</span>}
+                  <span class="what">{b.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   </section>
 
-  <!-- Sayılarla -->
-  {settings.stats.length > 0 && (
-    <section class="stats" aria-label="Sayılarla Gençliğin Yüzleri">
-      <ul class="wrap">
-        {settings.stats.map((s, i) => (
-          <li>
-            <span class="num" style={`color:${accents[i % accents.length]}`}>{s.value}</span>
-            <span class="lbl">{s.label}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  )}
-
-  <!-- Hakkımızda -->
-  <section class="section" id="hakkimizda">
-    <div class="wrap about">
+  <section class="about" id="hakkimizda">
+    <div class="wrap about-grid">
       <div>
-        <span class="eyebrow">Biz kimiz?</span>
         <h2>{settings.aboutTitle}</h2>
-        {settings.aboutText.map((p, i) => <p class:list={{ lead: i === 0 }}>{p}</p>)}
+        {settings.aboutText.map((p) => <p>{p}</p>)}
       </div>
-      <div class="about-media">
-        {settings.aboutImages.map((img) => (
-          <img src={img.url(900)} alt={img.alt} loading="lazy" width="900" height="506" />
+      {settings.stats.length > 0 && (
+        <p class="tally">
+          2022'den bu yana{' '}
+          {settings.stats.map((s, i) => (
+            <>
+              <strong>{s.value}</strong> {lower(s.label)}{i < settings.stats.length - 1 ? ', ' : '.'}
+            </>
+          ))}
+        </p>
+      )}
+    </div>
+
+    {photos.length > 0 && (
+      <div class="mosaic" aria-label="Forumlardan fotoğraflar">
+        {photos.map((img, i) => (
+          <img src={img.url(i === 0 ? 1400 : 720)} alt={img.alt} loading={i === 0 ? 'eager' : 'lazy'} />
         ))}
       </div>
-    </div>
+    )}
   </section>
 
-  <!-- Dönemler -->
-  <section id="donemler" class="donemler" aria-label="Dönemler">
-    {donemler.map((d, di) => {
-      const docs = belgeler.filter((b) => b.donem === d.number);
-      const accent = accents[di % accents.length];
-      return (
-        <article class="donem section" style={`--accent:${accent}`} id={`donem-${d.number}`}>
-          <div class="wrap">
-            <header class="donem-head">
-              <span class="donem-no">{d.number}. Dönem</span>
-              {d.years && <span class="donem-years">{d.years}</span>}
-            </header>
-            <div class="donem-body">
-              <h2>{d.title}</h2>
-              <div>
-                {d.intro.map((p) => <p>{p}</p>)}
-                {d.cities.length > 0 && (
-                  <ul class="chips" aria-label="Şehirler">
-                    {d.cities.map((c) => <li>{c}</li>)}
+  <section class="timeline" id="donemler">
+    <div class="wrap">
+      <h2 class="timeline-title">Bugüne kadar neler yaptık</h2>
+      <ol class="periods">
+        {donemler.map((d) => {
+          const docs = belgeler.filter((b) => b.donem === d.number);
+          return (
+            <li class="period" style={`--c:${periodColor(d.number)}`} id={`donem-${d.number}`}>
+              <div class="marker" aria-hidden="true">{d.number}</div>
+              <div class="period-body">
+                <p class="period-name">{d.number}. dönem{d.years && <span>, {d.years}</span>}</p>
+                <h3>{d.title}</h3>
+                <div class="period-text">
+                  {d.intro.map((p) => <p>{p}</p>)}
+                  {d.cities.length > 0 && (
+                    <p class="cities"><span>Forum yapılan şehirler:</span> {d.cities.join(', ')}</p>
+                  )}
+                </div>
+
+                {d.activities.length > 0 && (
+                  <ul class="activities">
+                    {d.activities.map((a) => (
+                      <li>
+                        <h4>{a.title}</h4>
+                        <p>{a.text}</p>
+                      </li>
+                    ))}
                   </ul>
                 )}
+
+                {d.highlight && (
+                  <blockquote class="outcome">
+                    <p class="outcome-title">{d.highlight.title}</p>
+                    <p>{d.highlight.text}</p>
+                  </blockquote>
+                )}
+
+                {docs.length > 0 && (
+                  <div class="docs">
+                    <h4>Bu dönemin politika önerileri</h4>
+                    <div class="doc-grid">{docs.map((b) => <DocCard belge={b} />)}</div>
+                  </div>
+                )}
               </div>
-            </div>
-
-            {d.activities.length > 0 && (
-              <ol class="activities">
-                {d.activities.map((a, i) => (
-                  <li>
-                    <span class="act-no" aria-hidden="true">{pad(i + 1)}.</span>
-                    <h3>{a.title}</h3>
-                    <p>{a.text}</p>
-                  </li>
-                ))}
-              </ol>
-            )}
-
-            {docs.length > 0 && (
-              <div class="docs">
-                <h3>{d.number}. Dönem Politika Önerileri</h3>
-                <div class="doc-grid">
-                  {docs.map((b) => <DocCard belge={b} />)}
-                </div>
-              </div>
-            )}
-
-            {d.highlight && (
-              <aside class="highlight">
-                <span class="eyebrow">Çıktılar</span>
-                <h3>{d.highlight.title}</h3>
-                <p>{d.highlight.text}</p>
-              </aside>
-            )}
-          </div>
-        </article>
-      );
-    })}
+            </li>
+          );
+        })}
+      </ol>
+    </div>
   </section>
 
-  <!-- Duyurular -->
   {duyurular.length > 0 && (
-    <section class="section duyurular">
+    <section class="news">
       <div class="wrap">
-        <div class="row-head">
-          <div>
-            <span class="eyebrow">Güncel</span>
-            <h2>Duyurular</h2>
-          </div>
-          <a class="btn btn--ghost" href="/duyurular">Tüm duyurular</a>
+        <div class="news-head">
+          <h2>Duyurular</h2>
+          <a href="/duyurular">Tüm duyurular</a>
         </div>
-        <div class="duyuru-grid">
-          {duyurular.map((d) => <DuyuruCard duyuru={d} />)}
-        </div>
+        <div class="news-grid">{duyurular.map((d) => <DuyuruCard duyuru={d} />)}</div>
       </div>
     </section>
   )}
 
-  <!-- Katıl / İletişim -->
-  <section class="section cta" id="iletisim">
-    <div class="wrap cta-inner">
-      <div>
-        <span class="eyebrow">Sen de katıl</span>
-        <h2>Söz gençlikte, sıra sende.</h2>
-        <p class="lead">Şehrindeki forumlara katılmak, gönüllü olmak ya da birlikte çalışmak için bize ulaş.</p>
-      </div>
-      <div class="cta-actions">
-        {settings.volunteerUrl && (
-          <a class="btn btn--light" href={settings.volunteerUrl} target="_blank" rel="noopener">Gönüllü ol</a>
-        )}
-        {settings.email && (
-          <a class="btn btn--ghost" href={`mailto:${settings.email}`}>{settings.email}</a>
-        )}
+  <section class="join" id="iletisim">
+    <div class="wrap">
+      <div class="join-bubble">
+        <h2>Sen de söz al.</h2>
+        <p>Şehrindeki forumlara katılmak, gönüllü olmak ya da birlikte çalışmak için bize yaz.</p>
+        <div class="join-actions">
+          {settings.volunteerUrl && (
+            <a class="btn btn--light" href={settings.volunteerUrl} target="_blank" rel="noopener">Gönüllü ol</a>
+          )}
+          {settings.email && <a class="btn btn--line" href={`mailto:${settings.email}`}>{settings.email}</a>}
+        </div>
       </div>
     </div>
   </section>
 </Base>
 
-<script>
-  // Giriş görselleri arasında yumuşak geçiş (hareket azaltma tercihine saygı göstererek).
-  const slides = [...document.querySelectorAll<HTMLImageElement>('.slides img')];
-  if (slides.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    let i = 0;
-    setInterval(() => {
-      slides[i].classList.remove('active');
-      i = (i + 1) % slides.length;
-      slides[i].classList.add('active');
-    }, 6000);
-  }
-</script>
-
 <style>
-  /* Giriş */
+  /* Giriş: mavi zemin, slogan ve gençlerin sesleri */
   .hero {
-    position: relative;
-    min-height: min(88vh, 820px);
-    display: flex;
-    align-items: flex-end;
+    background: var(--blue);
     color: #fff;
+    padding: clamp(56px, 9vw, 112px) 0 clamp(64px, 9vw, 120px);
     overflow: hidden;
-    background: var(--ink);
   }
-  .slides img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-    transform: scale(1.04);
-    transition: opacity 1.2s ease, transform 7s ease-out;
-  }
-  .slides img.active { opacity: 1; transform: scale(1); }
-  .hero::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(180deg, rgb(29 34 64 / 0.15) 0%, rgb(29 34 64 / 0.55) 50%, rgb(29 34 64 / 0.92) 100%);
-  }
-  .hero-inner {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    padding-top: 120px;
-    padding-bottom: clamp(48px, 8vw, 96px);
-  }
-  .hero h1 { max-width: 12ch; margin-bottom: 0.3em; }
-  .hero-text { font-size: clamp(1.1rem, 1.8vw, 1.35rem); max-width: 56ch; color: #eef0f8; }
-  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
-  .hero .eyebrow { color: #ffb37f; }
-  .hero .btn--ghost { color: #fff; }
-
-  /* Sayılar */
-  .stats { background: var(--ink); color: #fff; padding: 8px 0 56px; }
-  .stats ul {
-    list-style: none;
-    margin-top: 0;
-    margin-bottom: 0;
+  .hero-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: clamp(40px, 6vw, 88px);
+    align-items: center;
   }
-  .stats li {
+  .hero h1 { margin-bottom: 0.35em; }
+  .hero-text { font-size: clamp(1.15rem, 1.6vw, 1.3rem); color: var(--blue-soft); max-width: 44ch; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+  .hero .btn--line { color: #fff; }
+
+  .voices-caption { color: var(--blue-soft); font-size: 0.98rem; margin-bottom: 14px; }
+  .voices ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding-top: 22px;
-    border-top: 1px solid rgb(255 255 255 / 0.18);
+    gap: 10px;
   }
-  .num { font-family: var(--display); font-size: clamp(2.6rem, 6vw, 4.4rem); line-height: 1; }
-  .lbl { font-weight: 600; color: #cfd3e6; }
-  @media (max-width: 760px) { .stats ul { grid-template-columns: repeat(2, 1fr); } }
+  .voices li {
+    align-self: flex-start;
+    max-width: 88%;
+    animation: speak 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+    animation-delay: calc(0.25s + var(--i) * 0.09s);
+  }
+  .voices li.right { align-self: flex-end; }
+  .voices a {
+    display: block;
+    padding: 10px 16px 11px;
+    background: var(--fill);
+    color: var(--ink);
+    border-radius: var(--bubble);
+    text-decoration: none;
+    line-height: 1.25;
+  }
+  .voices li.right a { border-radius: var(--bubble-r); }
+  .voices a:hover .what { text-decoration: underline; }
+  .where { display: block; font-size: 0.82rem; font-weight: 500; color: var(--ink-soft); margin-bottom: 2px; }
+  .what { font-weight: 650; font-size: 1.02rem; }
+  @keyframes speak {
+    from { opacity: 0; transform: translateY(10px) scale(0.92); }
+    to { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .voices li { animation: none; } }
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .voices li { max-width: 94%; }
+  }
 
-  /* Hakkımızda */
-  .about {
+  /* Hakkımızda: metin ve sayıların cümlesi */
+  .about { padding: clamp(72px, 10vw, 128px) 0 0; }
+  .about-grid {
     display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap: clamp(32px, 6vw, 80px);
-    align-items: center;
-  }
-  .about-media { display: grid; gap: 16px; }
-  .about-media img { border-radius: var(--radius); width: 100%; height: auto; object-fit: cover; }
-  .about-media img:nth-child(2) { width: 78%; justify-self: end; margin-top: -60px; border: 6px solid var(--cream); }
-  @media (max-width: 860px) { .about { grid-template-columns: 1fr; } }
-
-  /* Dönemler */
-  .donem { border-top: 1px solid var(--line); }
-  .donem:nth-child(even) { background: var(--paper); }
-  .donem-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 18px; }
-  .donem-no {
-    font-family: var(--display);
-    text-transform: uppercase;
-    font-size: 1.15rem;
-    letter-spacing: 0.08em;
-    color: #fff;
-    background: var(--ink);
-    padding: 4px 14px 4px 12px;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .donem-no::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
-  .donem-years { font-weight: 700; color: var(--ink-soft); }
-  .donem-body {
-    display: grid;
-    grid-template-columns: 1fr 1.1fr;
-    gap: clamp(24px, 5vw, 64px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(32px, 6vw, 96px);
     align-items: start;
   }
-  .donem-body h2 { margin: 0; }
-  .donem-body .chips { margin-top: 18px; }
-  @media (max-width: 860px) { .donem-body { grid-template-columns: 1fr; } }
+  .about-grid div p { color: var(--ink-soft); font-size: 1.12rem; }
+  .tally {
+    font-size: clamp(1.6rem, 3vw, 2.35rem);
+    line-height: 1.2;
+    font-weight: 450;
+    font-stretch: 92%;
+    letter-spacing: -0.015em;
+    margin: 0;
+  }
+  .tally strong { font-weight: 800; color: var(--blue); }
+  @media (max-width: 860px) { .about-grid { grid-template-columns: 1fr; } }
+
+  .mosaic {
+    margin-top: clamp(48px, 7vw, 88px);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: repeat(2, minmax(160px, 22vw));
+    gap: 6px;
+  }
+  .mosaic img { width: 100%; height: 100%; object-fit: cover; }
+  .mosaic img:first-child { grid-row: span 2; }
+  @media (max-width: 700px) {
+    .mosaic { grid-template-columns: 1fr 1fr; grid-template-rows: none; grid-auto-rows: 38vw; }
+    .mosaic img:first-child { grid-column: span 2; grid-row: auto; }
+  }
+
+  /* Dönemler: dikey zaman çizgisi, her dönem kendi renginde */
+  .timeline { background: var(--mist); padding: clamp(72px, 10vw, 128px) 0; }
+  .timeline-title { margin-bottom: clamp(40px, 6vw, 72px); }
+  .periods { list-style: none; margin: 0; padding: 0; }
+  .period {
+    position: relative;
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: clamp(16px, 3vw, 40px);
+    padding-bottom: clamp(56px, 8vw, 96px);
+  }
+  .period::before {
+    content: '';
+    position: absolute;
+    left: 31px;
+    top: 64px;
+    bottom: 0;
+    width: 2px;
+    background: var(--line);
+  }
+  .period:last-child { padding-bottom: 0; }
+  .period:last-child::before { display: none; }
+  .marker {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    background: var(--c);
+    color: #fff;
+    border-radius: var(--bubble);
+    font-size: 1.9rem;
+    font-weight: 800;
+    font-stretch: 80%;
+  }
+  .period-name { font-weight: 650; color: var(--c); margin: 0 0 6px; font-size: 1.05rem; }
+  .period-name span { color: var(--ink-soft); font-weight: 500; }
+  .period h3 { font-size: clamp(1.8rem, 3.6vw, 2.8rem); max-width: 22ch; margin-bottom: 0.6em; }
+  .period-text p { color: var(--ink-soft); }
+  .cities span { font-weight: 650; color: var(--ink); }
 
   .activities {
     list-style: none;
     padding: 0;
-    margin: 48px 0 0;
+    margin: 32px 0 0;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 40px;
   }
-  .activities li {
-    background: var(--cream);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 26px 26px 18px;
-  }
-  .donem:nth-child(odd) .activities li { background: var(--paper); }
-  .act-no { font-family: var(--display); font-size: 2.2rem; line-height: 1; color: var(--accent); display: block; margin-bottom: 12px; }
-  .activities h3 { text-transform: none; font-family: var(--body); font-weight: 750; font-size: 1.15rem; letter-spacing: 0; line-height: 1.3; }
-  .activities p { color: var(--ink-soft); font-size: 0.98rem; }
+  .activities li { padding-left: 20px; border-left: 3px solid var(--c); }
+  .activities h4 { margin: 0 0 6px; font-size: 1.12rem; line-height: 1.3; font-weight: 700; }
+  .activities p { margin: 0; color: var(--ink-soft); font-size: 1rem; }
   @media (max-width: 760px) { .activities { grid-template-columns: 1fr; } }
 
-  .docs { margin-top: 56px; }
-  .docs > h3 { margin-bottom: 20px; }
-  .doc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
-  @media (max-width: 960px) { .doc-grid { grid-template-columns: repeat(2, 1fr); } }
-
-  .highlight {
-    margin-top: 40px;
-    padding: clamp(24px, 4vw, 40px);
-    border-radius: var(--radius);
-    background: var(--ink);
+  /* Öne çıkan çıktı: karar vericilere aktarılan söz */
+  .outcome {
+    margin: 36px 0 0;
+    padding: clamp(22px, 3.4vw, 34px) clamp(22px, 3.6vw, 40px);
+    background: var(--c);
     color: #fff;
-    border-left: 10px solid var(--accent);
+    border-radius: var(--bubble);
+    max-width: 780px;
   }
-  .highlight .eyebrow { color: var(--accent); }
-  .highlight h3 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); max-width: 24ch; }
-  .highlight p { max-width: 70ch; margin: 0; }
+  .outcome-title {
+    font-size: clamp(1.4rem, 2.6vw, 1.95rem);
+    font-weight: 750;
+    font-stretch: 88%;
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+    margin-bottom: 0.5em;
+    text-wrap: balance;
+  }
+  .outcome p:last-child { margin: 0; opacity: 0.92; }
+
+  .docs { margin-top: 44px; }
+  .docs h4 { font-size: 1.12rem; font-weight: 700; margin: 0 0 18px; }
+  .doc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 20px; max-width: 860px; }
+  @media (max-width: 960px) { .doc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  @media (max-width: 600px) {
+    .period { grid-template-columns: 1fr; }
+    .period::before { display: none; }
+    /* dar ekranda "1. dönem" yazısı numarayı zaten taşıyor */
+    .marker { display: none; }
+  }
 
   /* Duyurular */
-  .duyurular { border-top: 1px solid var(--line); }
-  .row-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
-  .duyuru-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-  @media (max-width: 960px) { .duyuru-grid { grid-template-columns: 1fr; } }
+  .news { padding: clamp(72px, 10vw, 120px) 0; }
+  .news-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+  .news-head h2 { margin: 0; }
+  .news-head a { font-weight: 650; color: var(--blue); }
+  .news-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 24px; }
+  @media (max-width: 960px) { .news-grid { grid-template-columns: 1fr; } }
 
   /* Katıl */
-  .cta { background: var(--navy); color: #fff; }
-  .cta .eyebrow { color: #ffc49d; }
-  .cta .lead { color: #dfe5f3; }
-  .cta-inner { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: center; }
-  .cta-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
-  .cta .btn--ghost { color: #fff; }
-  @media (max-width: 860px) { .cta-inner { grid-template-columns: 1fr; } }
+  .join { padding: clamp(64px, 9vw, 112px) 0; }
+  .join-bubble {
+    background: var(--blue);
+    color: #fff;
+    border-radius: 40px 40px 40px 8px;
+    padding: clamp(32px, 5.5vw, 64px);
+    max-width: 820px;
+  }
+  .join-bubble h2 { font-size: clamp(2.4rem, 6vw, 4.5rem); }
+  .join-bubble p { color: var(--blue-soft); font-size: 1.2rem; max-width: 46ch; }
+  .join-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+  .join .btn--line { color: #fff; }
 </style>
