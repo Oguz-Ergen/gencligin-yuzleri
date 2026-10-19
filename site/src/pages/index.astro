@@ -11,120 +11,165 @@ const [settings, donemler, belgeler, duyurular] = await Promise.all([
   getDuyurular(3),
 ]);
 
-// Her dönemin rengi politika belgesi kapaklarından gelir.
-const periodColor = (n: number) => ['var(--p1)', 'var(--p2)', 'var(--p3)'][(n - 1) % 3];
-// Giriş balonları: forumlarda gençlerin gündeme getirdiği konular (politika belgeleri).
-const fills = ['#fff', 'var(--mint)', 'var(--lilac)', 'var(--apricot)'];
+const periodColors = ['var(--p1)', 'var(--p2)', 'var(--p3)'];
+// Mavi dönemde metin beyaz; turuncu ve nane dönemde lacivert.
+const periodText = ['var(--ink)', '#fff', 'var(--ink)'];
+const pc = (n: number) => (n - 1) % 3;
+
+const words = settings.slogan.split(/\s+/).filter(Boolean);
+const topics = belgeler.map((b) => ({ who: b.label ?? '', what: b.title, href: b.fileUrl }));
+const cities = [...new Set(donemler.flatMap((d) => d.cities))];
 const photos = [...settings.heroImages, ...settings.aboutImages].slice(0, 5);
+const blobs = ['var(--fire)', 'var(--mint)', 'var(--violet)', 'var(--blue)'];
+const blobText = ['var(--ink)', 'var(--ink)', 'var(--ink)', '#fff'];
 const lower = (s: string) => s.toLocaleLowerCase('tr-TR');
+const tilt = (i: number) => `${[-3, 2.5, -1.5, 3, -2.5][i % 5]}deg`;
 ---
 
 <Base>
+  <!-- Giriş: pankart başlık ve forumdan akan sohbet -->
   <section class="hero">
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <h1>{settings.slogan}</h1>
+        <h1 class="poster slam" aria-label={settings.slogan}>
+          {words.map((w, i) => <span aria-hidden="true" style={`--i:${i}`}>{w}</span>)}
+        </h1>
         <p class="hero-text">{settings.heroText}</p>
         <div class="hero-actions">
-          <a class="btn btn--light" href="#donemler">Dönemleri incele</a>
+          <a class="btn btn--fire" href="#donemler">Neler yaptık?</a>
           <a class="btn btn--line" href="/belgeler">Politika belgeleri</a>
         </div>
       </div>
 
-      {belgeler.length > 0 && (
-        <div class="voices">
-          <p class="voices-caption">Forumlarda gençlerin masaya koyduğu konular</p>
-          <ul>
-            {belgeler.map((b, i) => (
-              <li style={`--i:${i}; --fill:${fills[i % fills.length]}`} class:list={{ right: i % 2 === 1 }}>
-                <a href={b.fileUrl} target="_blank" rel="noopener">
-                  {b.label && <span class="where">{b.label}</span>}
-                  <span class="what">{b.title}</span>
+      {topics.length > 0 && (
+        <div class="chat">
+          <p class="chat-title"><span class="dot" aria-hidden="true"></span>Forumlarda konuşulanlar</p>
+          <ul class="chat-feed" aria-live="off">
+            {topics.slice(0, 5).map((t, i) => (
+              <li class:list={['msg', { right: i % 2 === 1 }]} style={`--fill:${blobs[i % 3]}`}>
+                <a href={t.href} target="_blank" rel="noopener">
+                  {t.who && <span class="who">{t.who}</span>}
+                  <span class="what">{t.what}</span>
                 </a>
               </li>
             ))}
           </ul>
+          <script type="application/json" id="topics" set:html={JSON.stringify(topics)} />
         </div>
       )}
     </div>
   </section>
 
-  <section class="about" id="hakkimizda">
-    <div class="wrap about-grid">
-      <div>
-        <h2>{settings.aboutTitle}</h2>
-        {settings.aboutText.map((p) => <p>{p}</p>)}
+  <!-- Slogan bantları -->
+  <div class="bands" aria-hidden="true">
+    {photos[0] && <img class="sticker s1" src={photos[0].url(720)} alt="" />}
+    {photos[1] && <img class="sticker s2" src={photos[1].url(720)} alt="" />}
+    <div class="ticker band band--fire" style="--speed:38s">
+      <div class="ticker-track">
+        {[0, 1].map(() => <span>{cities.map((c) => <>{c}<i>✺</i></>)}</span>)}
       </div>
+    </div>
+    <div class="ticker ticker--rev band band--violet" style="--speed:60s">
+      <div class="ticker-track">
+        {[0, 1].map(() => (
+          <span>
+            <>#ŞimdiSözGençlikte<i>✺</i></>
+            {topics.map((t) => <>{t.what}<i>✺</i></>)}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Sayılar ve hakkımızda -->
+  <section class="about" id="hakkimizda">
+    <div class="wrap">
       {settings.stats.length > 0 && (
-        <p class="tally">
+        <p class="tally" data-reveal style="--tilt:0deg">
           2022'den bu yana{' '}
           {settings.stats.map((s, i) => (
             <>
-              <strong>{s.value}</strong> {lower(s.label)}{i < settings.stats.length - 1 ? ', ' : '.'}
+              <span class="num" style={`--bg:${blobs[i % 4]}; --fg:${blobText[i % 4]}; --r:${i % 2 ? 3 : -3}deg`}>
+                <span data-count={s.value}>{s.value}</span>
+              </span>{' '}
+              {lower(s.label)}{i < settings.stats.length - 1 ? ', ' : '.'}
             </>
           ))}
         </p>
       )}
-    </div>
 
-    {photos.length > 0 && (
-      <div class="mosaic" aria-label="Forumlardan fotoğraflar">
-        {photos.map((img, i) => (
-          <img src={img.url(i === 0 ? 1400 : 720)} alt={img.alt} loading={i === 0 ? 'eager' : 'lazy'} />
-        ))}
+      <div class="about-grid">
+        <div data-reveal style="--tilt:0deg">
+          <h2>{settings.aboutTitle}</h2>
+          {settings.aboutText.map((p) => <p>{p}</p>)}
+        </div>
+        {photos.length > 0 && (
+          <div class="wall" aria-label="Forumlardan fotoğraflar">
+            {photos.map((img, i) => (
+              <figure data-reveal style={`--tilt:${tilt(i)}`}>
+                <img src={img.url(720)} alt={img.alt} loading="lazy" />
+              </figure>
+            ))}
+          </div>
+        )}
       </div>
-    )}
+    </div>
   </section>
 
-  <section class="timeline" id="donemler">
-    <div class="wrap">
-      <h2 class="timeline-title">Bugüne kadar neler yaptık</h2>
-      <ol class="periods">
-        {donemler.map((d) => {
-          const docs = belgeler.filter((b) => b.donem === d.number);
-          return (
-            <li class="period" style={`--c:${periodColor(d.number)}`} id={`donem-${d.number}`}>
-              <div class="marker" aria-hidden="true">{d.number}</div>
-              <div class="period-body">
-                <p class="period-name">{d.number}. dönem{d.years && <span>, {d.years}</span>}</p>
-                <h3>{d.title}</h3>
-                <div class="period-text">
-                  {d.intro.map((p) => <p>{p}</p>)}
-                  {d.cities.length > 0 && (
-                    <p class="cities"><span>Forum yapılan şehirler:</span> {d.cities.join(', ')}</p>
-                  )}
-                </div>
-
-                {d.activities.length > 0 && (
-                  <ul class="activities">
-                    {d.activities.map((a) => (
-                      <li>
-                        <h4>{a.title}</h4>
-                        <p>{a.text}</p>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                {d.highlight && (
-                  <blockquote class="outcome">
-                    <p class="outcome-title">{d.highlight.title}</p>
-                    <p>{d.highlight.text}</p>
-                  </blockquote>
-                )}
-
-                {docs.length > 0 && (
-                  <div class="docs">
-                    <h4>Bu dönemin politika önerileri</h4>
-                    <div class="doc-grid">{docs.map((b) => <DocCard belge={b} />)}</div>
-                  </div>
-                )}
+  <!-- Dönemler -->
+  <section id="donemler" aria-label="Dönemler">
+    {donemler.map((d) => {
+      const docs = belgeler.filter((b) => b.donem === d.number);
+      const k = pc(d.number);
+      return (
+        <article class="period" id={`donem-${d.number}`} style={`--c:${periodColors[k]}; --on:${periodText[k]}`}>
+          <span class="giant" aria-hidden="true">{d.number}</span>
+          <div class="wrap period-inner">
+            <p class="period-name">{d.number}. dönem{d.years && <>, {d.years}</>}</p>
+            <h2 class="poster period-title" data-reveal style="--tilt:-1.5deg">{d.title}</h2>
+            <div class="period-cols">
+              <div class="period-text">
+                {d.intro.map((p) => <p>{p}</p>)}
               </div>
-            </li>
-          );
-        })}
-      </ol>
-    </div>
+              {d.cities.length > 0 && (
+                <ul class="cities" aria-label="Forum yapılan şehirler">
+                  {d.cities.map((c, i) => <li style={`--r:${tilt(i)}`}>{c}</li>)}
+                </ul>
+              )}
+            </div>
+
+            {d.activities.length > 0 && (
+              <ul class="activities">
+                {d.activities.map((a, i) => (
+                  <li data-reveal style={`--tilt:${tilt(i)}`}>
+                    <h3>{a.title}</h3>
+                    <p>{a.text}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {d.highlight && (
+              <blockquote class="outcome" data-reveal style="--tilt:2deg">
+                <p class="outcome-title">{d.highlight.title}</p>
+                <p>{d.highlight.text}</p>
+              </blockquote>
+            )}
+
+            {docs.length > 0 && (
+              <div class="docs">
+                <h3>Bu dönemin politika önerileri</h3>
+                <div class="doc-grid">
+                  {docs.map((b, i) => (
+                    <div class="pin" style={`--r:${tilt(i)}`}><DocCard belge={b} /></div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </article>
+      );
+    })}
   </section>
 
   {duyurular.length > 0 && (
@@ -139,218 +184,378 @@ const lower = (s: string) => s.toLocaleLowerCase('tr-TR');
     </section>
   )}
 
+  <!-- Katıl -->
   <section class="join" id="iletisim">
-    <div class="wrap">
-      <div class="join-bubble">
-        <h2>Sen de söz al.</h2>
-        <p>Şehrindeki forumlara katılmak, gönüllü olmak ya da birlikte çalışmak için bize yaz.</p>
-        <div class="join-actions">
-          {settings.volunteerUrl && (
-            <a class="btn btn--light" href={settings.volunteerUrl} target="_blank" rel="noopener">Gönüllü ol</a>
-          )}
-          {settings.email && <a class="btn btn--line" href={`mailto:${settings.email}`}>{settings.email}</a>}
-        </div>
+    <div class="ticker join-ticker" style="--speed:22s" aria-hidden="true">
+      <div class="ticker-track">
+        {[0, 1].map(() => <span>{[0, 1, 2, 3].map(() => <>Sen de söz al<i>✺</i></>)}</span>)}
+      </div>
+    </div>
+    <div class="wrap join-inner">
+      <h2 class="visually-hidden">Sen de söz al</h2>
+      <p>Şehrindeki forumlara katılmak, gönüllü olmak ya da birlikte çalışmak için bize yaz.</p>
+      <div class="join-actions">
+        {settings.volunteerUrl && (
+          <a class="btn" href={settings.volunteerUrl} target="_blank" rel="noopener">Gönüllü ol</a>
+        )}
+        {settings.email && <a class="btn btn--line" href={`mailto:${settings.email}`}>{settings.email}</a>}
       </div>
     </div>
   </section>
 </Base>
 
+<script>
+  // Forum sohbeti: önce "yazıyor…", sonra konu balonu düşer; döngü sürer.
+  const feed = document.querySelector<HTMLUListElement>('.chat-feed');
+  const data = document.getElementById('topics');
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (feed && data && !calm) {
+    const topics: { who: string; what: string; href: string }[] = JSON.parse(data.textContent || '[]');
+    const fills = ['var(--fire)', 'var(--mint)', 'var(--violet)', '#fff'];
+    const MAX = 5;
+    let n = 0;
+    feed.replaceChildren();
+
+    const next = () => {
+      const t = topics[n % topics.length];
+      const li = document.createElement('li');
+      li.className = `msg typing${n % 2 === 1 ? ' right' : ''}`;
+      li.style.setProperty('--fill', fills[n % fills.length]);
+      li.innerHTML = '<span class="dots"><b></b><b></b><b></b></span>';
+      feed.append(li);
+      while (feed.children.length > MAX) feed.firstElementChild!.remove();
+      setTimeout(() => {
+        li.classList.remove('typing');
+        const a = document.createElement('a');
+        a.href = t.href;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        if (t.who) {
+          const who = document.createElement('span');
+          who.className = 'who';
+          who.textContent = t.who;
+          a.append(who);
+        }
+        const what = document.createElement('span');
+        what.className = 'what';
+        what.textContent = t.what;
+        a.append(what);
+        li.replaceChildren(a);
+        n++;
+        setTimeout(next, 1500);
+      }, 900);
+    };
+    next();
+  }
+</script>
+
 <style>
-  /* Giriş: mavi zemin, slogan ve gençlerin sesleri */
+  /* ——— Giriş ——— */
   .hero {
+    position: relative;
     background: var(--blue);
     color: #fff;
-    padding: clamp(56px, 9vw, 112px) 0 clamp(64px, 9vw, 120px);
+    padding: clamp(40px, 7vw, 88px) 0 clamp(96px, 12vw, 150px);
     overflow: hidden;
   }
   .hero-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-    gap: clamp(40px, 6vw, 88px);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: clamp(32px, 5vw, 72px);
     align-items: center;
   }
-  .hero h1 { margin-bottom: 0.35em; }
-  .hero-text { font-size: clamp(1.15rem, 1.6vw, 1.3rem); color: var(--blue-soft); max-width: 44ch; }
-  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+  .slam { font-size: clamp(4.2rem, 13vw, 11.5rem); margin: 0 0 0.25em; }
+  .slam span {
+    display: block;
+    width: fit-content;
+    animation: slam 0.55s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+    animation-delay: calc(0.1s + var(--i) * 0.16s);
+  }
+  .slam span:nth-child(2) { margin-left: 0.5em; }
+  @keyframes slam {
+    0% { opacity: 0; transform: scale(1.8) rotate(-8deg); filter: blur(6px); }
+    70% { opacity: 1; transform: scale(0.96) rotate(1deg); filter: none; }
+    100% { opacity: 1; transform: none; }
+  }
+  .hero-text { font-size: clamp(1.15rem, 1.6vw, 1.35rem); color: var(--blue-soft); max-width: 40ch; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
   .hero .btn--line { color: #fff; }
 
-  .voices-caption { color: var(--blue-soft); font-size: 0.98rem; margin-bottom: 14px; }
-  .voices ul {
+  /* Sohbet */
+  .chat {
+    background: rgb(14 20 64 / 0.35);
+    border-radius: 34px 34px 34px 8px;
+    padding: 18px 18px 22px;
+    min-height: 470px;
+    display: flex;
+    flex-direction: column;
+    transform: rotate(1.5deg);
+  }
+  .chat-title { display: flex; align-items: center; gap: 10px; font-weight: 650; margin: 0 0 14px; color: var(--blue-soft); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--mint); animation: pulse 1.6s infinite; }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgb(63 211 181 / 0.7); }
+    70% { box-shadow: 0 0 0 10px rgb(63 211 181 / 0); }
+    100% { box-shadow: 0 0 0 0 rgb(63 211 181 / 0); }
+  }
+  .chat-feed {
     list-style: none;
     margin: 0;
     padding: 0;
+    flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
     gap: 10px;
+    overflow: hidden;
   }
-  .voices li {
+  .chat-feed :global(.msg) {
     align-self: flex-start;
-    max-width: 88%;
-    animation: speak 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
-    animation-delay: calc(0.25s + var(--i) * 0.09s);
+    max-width: 86%;
+    animation: pop 0.45s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+    transform-origin: bottom left;
   }
-  .voices li.right { align-self: flex-end; }
-  .voices a {
+  .chat-feed :global(.msg.right) { align-self: flex-end; transform-origin: bottom right; }
+  .chat-feed :global(.msg a),
+  .chat-feed :global(.msg .dots) {
     display: block;
-    padding: 10px 16px 11px;
     background: var(--fill);
     color: var(--ink);
+    padding: 10px 16px 11px;
     border-radius: var(--bubble);
     text-decoration: none;
     line-height: 1.25;
   }
-  .voices li.right a { border-radius: var(--bubble-r); }
-  .voices a:hover .what { text-decoration: underline; }
-  .where { display: block; font-size: 0.82rem; font-weight: 500; color: var(--ink-soft); margin-bottom: 2px; }
-  .what { font-weight: 650; font-size: 1.02rem; }
-  @keyframes speak {
-    from { opacity: 0; transform: translateY(10px) scale(0.92); }
+  .chat-feed :global(.msg.right a),
+  .chat-feed :global(.msg.right .dots) { border-radius: var(--bubble-r); }
+  .chat-feed :global(.msg a:hover .what) { text-decoration: underline; }
+  .chat-feed :global(.who) { display: block; font-size: 0.82rem; font-weight: 750; margin-bottom: 2px; opacity: 0.75; }
+  .chat-feed :global(.what) { font-weight: 650; font-size: 1.05rem; }
+  .chat-feed :global(.msg .dots) { display: inline-flex; gap: 5px; padding: 14px 18px; }
+  .chat-feed :global(.dots b) { width: 8px; height: 8px; border-radius: 50%; background: var(--ink); opacity: 0.4; animation: blink 1s infinite; }
+  .chat-feed :global(.dots b:nth-child(2)) { animation-delay: 0.15s; }
+  .chat-feed :global(.dots b:nth-child(3)) { animation-delay: 0.3s; }
+  @keyframes blink { 50% { opacity: 1; transform: translateY(-3px); } }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.6) translateY(16px); }
     to { opacity: 1; transform: none; }
   }
-  @media (prefers-reduced-motion: reduce) { .voices li { animation: none; } }
   @media (max-width: 900px) {
     .hero-grid { grid-template-columns: 1fr; }
-    .voices li { max-width: 94%; }
+    .chat { min-height: 400px; transform: none; }
   }
 
-  /* Hakkımızda: metin ve sayıların cümlesi */
-  .about { padding: clamp(72px, 10vw, 128px) 0 0; }
+  /* ——— Slogan bantları ——— */
+  .bands { position: relative; margin-top: -64px; z-index: 2; padding-bottom: 24px; }
+  .band {
+    font-weight: 800;
+    font-stretch: 75%;
+    text-transform: uppercase;
+    font-size: clamp(1.8rem, 4.5vw, 3.6rem);
+    line-height: 1;
+    color: var(--ink);
+    padding: 14px 0 12px;
+    width: 106%;
+    margin-left: -3%;
+  }
+  .band span { padding-right: 0.4em; }
+  .band i { font-style: normal; margin: 0 0.4em; display: inline-block; }
+  .band--fire { background: var(--fire); transform: rotate(-2.5deg); }
+  .band--violet { background: var(--violet); transform: rotate(1.5deg); margin-top: -6px; font-size: clamp(1.3rem, 3vw, 2.3rem); }
+  .band--fire i { animation: spin 6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .sticker {
+    position: absolute;
+    z-index: 3;
+    width: clamp(160px, 18vw, 260px);
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border: 7px solid #fff;
+    border-radius: 6px;
+    box-shadow: 0 18px 40px rgb(14 20 64 / 0.3);
+    animation: float 6s ease-in-out infinite;
+  }
+  .s1 { left: 44%; top: -130px; width: clamp(150px, 15vw, 220px); --r: -8deg; }
+  .s2 { right: 5%; top: 40px; --r: 7deg; animation-delay: -3s; }
+  @keyframes float {
+    0%, 100% { transform: rotate(var(--r)) translateY(0); }
+    50% { transform: rotate(calc(var(--r) * -0.4)) translateY(-14px); }
+  }
+  @media (max-width: 900px) { .sticker { display: none; } }
+
+  /* ——— Sayılar ve hakkımızda ——— */
+  .about { padding: clamp(72px, 10vw, 136px) 0 clamp(72px, 10vw, 128px); overflow: hidden; }
+  .tally {
+    font-size: clamp(2rem, 5.2vw, 4.4rem);
+    font-weight: 700;
+    font-stretch: 82%;
+    line-height: 1.22;
+    letter-spacing: -0.02em;
+    max-width: 22ch;
+    margin: 0 0 clamp(56px, 8vw, 104px);
+  }
+  .num {
+    display: inline-block;
+    background: var(--bg);
+    color: var(--fg);
+    padding: 0 0.22em 0.04em;
+    border-radius: 0.38em 0.38em 0.38em 0.08em;
+    transform: rotate(var(--r));
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
   .about-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: clamp(32px, 6vw, 96px);
-    align-items: start;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(32px, 6vw, 88px);
+    align-items: center;
   }
-  .about-grid div p { color: var(--ink-soft); font-size: 1.12rem; }
-  .tally {
-    font-size: clamp(1.6rem, 3vw, 2.35rem);
-    line-height: 1.2;
-    font-weight: 450;
-    font-stretch: 92%;
-    letter-spacing: -0.015em;
+  .about-grid h2 { font-size: clamp(2.2rem, 4.6vw, 3.6rem); }
+  .about-grid p { color: var(--ink-soft); font-size: 1.12rem; }
+
+  .wall { display: grid; grid-template-columns: repeat(6, 1fr); grid-auto-rows: clamp(70px, 9vw, 120px); }
+  .wall figure {
     margin: 0;
+    border: 6px solid #fff;
+    border-radius: 4px;
+    box-shadow: 0 14px 30px rgb(14 20 64 / 0.18);
+    overflow: hidden;
+    transform: rotate(var(--tilt));
   }
-  .tally strong { font-weight: 800; color: var(--blue); }
+  .js .wall figure[data-reveal] { transition: transform 0.35s cubic-bezier(0.3, 1.5, 0.5, 1), opacity 0.7s ease; }
+  .js .wall figure.in { transform: rotate(var(--tilt)); }
+  .wall figure:hover { transform: rotate(0deg) scale(1.06); z-index: 2; }
+  .js .wall figure.in:hover { transform: rotate(0deg) scale(1.06); }
+  .wall img { width: 100%; height: 100%; object-fit: cover; }
+  .wall figure:nth-child(1) { grid-column: 1 / 5; grid-row: 1 / 4; }
+  .wall figure:nth-child(2) { grid-column: 4 / 7; grid-row: 1 / 3; margin-top: 24px; }
+  .wall figure:nth-child(3) { grid-column: 5 / 7; grid-row: 3 / 5; }
+  .wall figure:nth-child(4) { grid-column: 1 / 3; grid-row: 4 / 6; margin-top: -20px; }
+  .wall figure:nth-child(5) { grid-column: 3 / 5; grid-row: 4 / 6; }
   @media (max-width: 860px) { .about-grid { grid-template-columns: 1fr; } }
 
-  .mosaic {
-    margin-top: clamp(48px, 7vw, 88px);
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    grid-template-rows: repeat(2, minmax(160px, 22vw));
-    gap: 6px;
-  }
-  .mosaic img { width: 100%; height: 100%; object-fit: cover; }
-  .mosaic img:first-child { grid-row: span 2; }
-  @media (max-width: 700px) {
-    .mosaic { grid-template-columns: 1fr 1fr; grid-template-rows: none; grid-auto-rows: 38vw; }
-    .mosaic img:first-child { grid-column: span 2; grid-row: auto; }
-  }
-
-  /* Dönemler: dikey zaman çizgisi, her dönem kendi renginde */
-  .timeline { background: var(--mist); padding: clamp(72px, 10vw, 128px) 0; }
-  .timeline-title { margin-bottom: clamp(40px, 6vw, 72px); }
-  .periods { list-style: none; margin: 0; padding: 0; }
+  /* ——— Dönemler ——— */
   .period {
     position: relative;
-    display: grid;
-    grid-template-columns: 64px minmax(0, 1fr);
-    gap: clamp(16px, 3vw, 40px);
-    padding-bottom: clamp(56px, 8vw, 96px);
-  }
-  .period::before {
-    content: '';
-    position: absolute;
-    left: 31px;
-    top: 64px;
-    bottom: 0;
-    width: 2px;
-    background: var(--line);
-  }
-  .period:last-child { padding-bottom: 0; }
-  .period:last-child::before { display: none; }
-  .marker {
-    width: 64px;
-    height: 64px;
-    display: grid;
-    place-items: center;
     background: var(--c);
-    color: #fff;
-    border-radius: var(--bubble);
-    font-size: 1.9rem;
-    font-weight: 800;
-    font-stretch: 80%;
+    color: var(--on);
+    padding: clamp(72px, 10vw, 128px) 0;
+    overflow: hidden;
   }
-  .period-name { font-weight: 650; color: var(--c); margin: 0 0 6px; font-size: 1.05rem; }
-  .period-name span { color: var(--ink-soft); font-weight: 500; }
-  .period h3 { font-size: clamp(1.8rem, 3.6vw, 2.8rem); max-width: 22ch; margin-bottom: 0.6em; }
-  .period-text p { color: var(--ink-soft); }
-  .cities span { font-weight: 650; color: var(--ink); }
+  .giant {
+    position: absolute;
+    right: -0.06em;
+    top: 50%;
+    font-size: clamp(22rem, 60vw, 54rem);
+    font-weight: 800;
+    font-stretch: 75%;
+    line-height: 0.7;
+    color: var(--on);
+    opacity: 0.1;
+    pointer-events: none;
+    translate: 0 -50%;
+  }
+  @supports (animation-timeline: view()) {
+    .giant { animation: drift linear both; animation-timeline: view(); }
+    @keyframes drift {
+      from { transform: translateY(18%) rotate(-6deg); }
+      to { transform: translateY(-18%) rotate(4deg); }
+    }
+  }
+  .period-inner { position: relative; }
+  .period-name { font-weight: 750; font-size: 1.1rem; margin: 0 0 12px; }
+  .period-title { font-size: clamp(3rem, 8.5vw, 7rem); max-width: 14ch; margin-bottom: 0.4em; }
+  .period-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: clamp(28px, 5vw, 72px);
+    align-items: start;
+  }
+  .period-text p { font-size: 1.12rem; }
+  .cities { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .cities li {
+    background: var(--ink);
+    color: #fff;
+    font-weight: 700;
+    padding: 6px 14px 7px;
+    border-radius: var(--bubble);
+    transform: rotate(var(--r));
+    transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .period:nth-child(2) .cities li { background: #fff; color: var(--ink); }
+  .cities li:hover { transform: rotate(0) scale(1.12); }
+  @media (max-width: 860px) { .period-cols { grid-template-columns: 1fr; } }
 
   .activities {
     list-style: none;
     padding: 0;
-    margin: 32px 0 0;
+    margin: 48px 0 0;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 28px 40px;
+    gap: 20px;
   }
-  .activities li { padding-left: 20px; border-left: 3px solid var(--c); }
-  .activities h4 { margin: 0 0 6px; font-size: 1.12rem; line-height: 1.3; font-weight: 700; }
-  .activities p { margin: 0; color: var(--ink-soft); font-size: 1rem; }
+  .activities li {
+    background: var(--paper);
+    color: var(--ink);
+    padding: 24px 26px;
+    border-radius: var(--bubble);
+  }
+  .activities li:nth-child(even) { border-radius: var(--bubble-r); }
+  .activities h3 { font-size: 1.25rem; line-height: 1.25; margin-bottom: 8px; }
+  .activities p { margin: 0; color: var(--ink-soft); }
   @media (max-width: 760px) { .activities { grid-template-columns: 1fr; } }
 
-  /* Öne çıkan çıktı: karar vericilere aktarılan söz */
   .outcome {
-    margin: 36px 0 0;
-    padding: clamp(22px, 3.4vw, 34px) clamp(22px, 3.6vw, 40px);
-    background: var(--c);
+    margin: 48px 0 0;
+    padding: clamp(26px, 4vw, 44px);
+    background: var(--ink);
     color: #fff;
-    border-radius: var(--bubble);
-    max-width: 780px;
+    border-radius: 36px 36px 36px 8px;
+    max-width: 860px;
   }
   .outcome-title {
-    font-size: clamp(1.4rem, 2.6vw, 1.95rem);
-    font-weight: 750;
-    font-stretch: 88%;
-    line-height: 1.12;
+    font-size: clamp(1.8rem, 3.8vw, 3rem);
+    font-weight: 800;
+    font-stretch: 78%;
+    line-height: 1.02;
     letter-spacing: -0.015em;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.45em;
     text-wrap: balance;
   }
-  .outcome p:last-child { margin: 0; opacity: 0.92; }
+  .outcome p:last-child { margin: 0; color: #d3d9f5; }
 
-  .docs { margin-top: 44px; }
-  .docs h4 { font-size: 1.12rem; font-weight: 700; margin: 0 0 18px; }
-  .doc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 20px; max-width: 860px; }
+  .docs { margin-top: 56px; }
+  .docs > h3 { font-size: 1.3rem; margin-bottom: 22px; }
+  .doc-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px 24px; max-width: 900px; }
+  .pin { transform: rotate(var(--r)); transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1); }
+  .pin:hover { transform: rotate(0) translateY(-8px) scale(1.04); }
+  .pin :global(.label) { color: inherit; opacity: 0.8; }
   @media (max-width: 960px) { .doc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
-  @media (max-width: 600px) {
-    .period { grid-template-columns: 1fr; }
-    .period::before { display: none; }
-    /* dar ekranda "1. dönem" yazısı numarayı zaten taşıyor */
-    .marker { display: none; }
-  }
-
-  /* Duyurular */
+  /* ——— Duyurular ——— */
   .news { padding: clamp(72px, 10vw, 120px) 0; }
   .news-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
-  .news-head h2 { margin: 0; }
-  .news-head a { font-weight: 650; color: var(--blue); }
+  .news-head h2 { margin: 0; font-size: clamp(2.4rem, 6vw, 4.5rem); }
+  .news-head a { font-weight: 700; color: var(--blue); }
   .news-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px 24px; }
   @media (max-width: 960px) { .news-grid { grid-template-columns: 1fr; } }
 
-  /* Katıl */
-  .join { padding: clamp(64px, 9vw, 112px) 0; }
-  .join-bubble {
-    background: var(--blue);
-    color: #fff;
-    border-radius: 40px 40px 40px 8px;
-    padding: clamp(32px, 5.5vw, 64px);
-    max-width: 820px;
+  /* ——— Katıl ——— */
+  .join { background: var(--fire); color: var(--ink); padding: clamp(56px, 8vw, 96px) 0 clamp(64px, 9vw, 112px); overflow: hidden; }
+  .join-ticker {
+    font-weight: 800;
+    font-stretch: 75%;
+    text-transform: uppercase;
+    font-size: clamp(4.5rem, 15vw, 13rem);
+    line-height: 0.9;
+    letter-spacing: -0.01em;
   }
-  .join-bubble h2 { font-size: clamp(2.4rem, 6vw, 4.5rem); }
-  .join-bubble p { color: var(--blue-soft); font-size: 1.2rem; max-width: 46ch; }
-  .join-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
-  .join .btn--line { color: #fff; }
+  .join-ticker i { font-style: normal; margin: 0 0.25em; display: inline-block; animation: spin 5s linear infinite; }
+  .join-inner { margin-top: clamp(24px, 4vw, 48px); }
+  .join-inner p { font-size: clamp(1.2rem, 2vw, 1.5rem); font-weight: 550; max-width: 40ch; }
+  .join-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+  .join .btn--line { color: var(--ink); }
+  .join .btn--line:hover { background: rgb(14 20 64 / 0.08); }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 </style>

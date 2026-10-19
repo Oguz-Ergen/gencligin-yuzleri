@@ -36,15 +36,46 @@ Astro.response.headers.set('Cache-Control', 'public, max-age=60, stale-while-rev
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="theme-color" content="#3456a6" />
+    <meta name="theme-color" content="#2448d8" />
+    <script is:inline>document.documentElement.classList.add('js')</script>
   </head>
   <body>
     <a class="skip" href="#icerik">İçeriğe geç</a>
-    <Header />
+    <Header volunteerUrl={settings.volunteerUrl} />
     <main id="icerik">
       <slot />
     </main>
     <Footer settings={settings} />
+    <script>
+      // Kaydırınca beliren öğeler ve sıfırdan sayan rakamlar.
+      const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const count = (el: HTMLElement) => {
+        const raw = el.dataset.count ?? '';
+        const m = raw.match(/^(\d+)(.*)$/);
+        if (!m || calm) return;
+        const target = Number(m[1]);
+        const rest = m[2];
+        const t0 = performance.now();
+        const step = (t: number) => {
+          const k = Math.min(1, (t - t0) / 1400);
+          el.textContent = Math.round(target * (1 - Math.pow(1 - k, 3))) + rest;
+          if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      };
+      const io = new IntersectionObserver(
+        (entries) =>
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            const el = e.target as HTMLElement;
+            el.classList.add('in');
+            el.querySelectorAll<HTMLElement>('[data-count]').forEach(count);
+            io.unobserve(el);
+          }),
+        { threshold: 0.2 },
+      );
+      document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+    </script>
   </body>
 </html>
 

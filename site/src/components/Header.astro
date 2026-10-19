@@ -7,6 +7,7 @@ const links = [
   { href: '/#iletisim', label: 'İletişim' },
 ];
 const path = Astro.url.pathname;
+const { volunteerUrl } = Astro.props as { volunteerUrl?: string };
 ---
 
 <header class="header">
@@ -22,6 +23,8 @@ const path = Astro.url.pathname;
         ))}
       </ul>
     </nav>
+
+    {volunteerUrl && <a class="join-pill" href={volunteerUrl} target="_blank" rel="noopener">Gönüllü ol</a>}
 
     <details class="nav-mobile">
       <summary aria-label="Menüyü aç">
@@ -48,17 +51,30 @@ const path = Astro.url.pathname;
     position: sticky;
     top: 0;
     z-index: 50;
-    background: color-mix(in srgb, var(--paper) 92%, transparent);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--line);
+    background: var(--blue);
+    color: #fff;
+    border-bottom: 1px solid rgb(255 255 255 / 0.14);
   }
   .bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 16px;
     height: 72px;
   }
-  .logo img { height: 52px; width: auto; }
+  .bar nav.nav-desktop { margin-left: auto; }
+  .logo { background: #fff; border-radius: var(--bubble); padding: 4px 10px; transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1); }
+  .logo:hover { transform: rotate(-4deg) scale(1.05); }
+  .join-pill {
+    background: var(--fire);
+    color: var(--ink);
+    font-weight: 750;
+    text-decoration: none;
+    padding: 9px 16px;
+    border-radius: var(--bubble-r);
+    transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .join-pill:hover { transform: rotate(3deg) scale(1.06); }
+  .logo img { height: 46px; width: auto; }
 
   ul { list-style: none; margin: 0; padding: 0; }
   .nav-desktop ul { display: flex; gap: 4px; }
@@ -69,10 +85,10 @@ const path = Astro.url.pathname;
     padding: 8px 14px;
     border-radius: var(--bubble);
   }
-  .nav-desktop a:hover { background: var(--mist); }
-  .nav-desktop a[aria-current='page'] { background: var(--ink); color: #fff; }
+  .nav-desktop a:hover { background: rgb(255 255 255 / 0.14); }
+  .nav-desktop a[aria-current='page'] { background: #fff; color: var(--ink); }
 
-  .nav-mobile { display: none; position: relative; }
+  .nav-mobile { display: none; position: relative; color: var(--ink); }
   .nav-mobile summary {
     list-style: none;
     cursor: pointer;
@@ -83,7 +99,7 @@ const path = Astro.url.pathname;
     gap: 5px;
   }
   .nav-mobile summary::-webkit-details-marker { display: none; }
-  .nav-mobile summary span { display: block; width: 24px; height: 2px; background: var(--ink); border-radius: 2px; }
+  .nav-mobile summary span { display: block; width: 24px; height: 2px; background: #fff; border-radius: 2px; }
   .nav-mobile nav {
     position: absolute;
     right: 0;
@@ -107,6 +123,7 @@ const path = Astro.url.pathname;
   @media (max-width: 860px) {
     .nav-desktop { display: none; }
     .nav-mobile { display: block; }
-    .logo img { height: 44px; }
+    .join-pill { margin-left: auto; }
+    .logo img { height: 38px; }
   }
 </style>
