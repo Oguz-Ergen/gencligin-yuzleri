@@ -1,8 +1,8 @@
 ---
 import { t, anchor, routes, type Lang } from '../i18n';
 
-interface Props { lang: Lang; volunteerUrl?: string; switchHref: string }
-const { lang, volunteerUrl, switchHref } = Astro.props;
+interface Props { lang: Lang; switchHref: string }
+const { lang, switchHref } = Astro.props;
 const s = t[lang];
 const links = [
   { href: anchor(lang, 'about'), label: s.nav.about },
@@ -31,7 +31,7 @@ const other = lang === 'tr' ? 'en' : 'tr';
     </nav>
 
     <a class="lang" href={switchHref} hreflang={other} lang={other} aria-label={s.switchTo}>{s.switchShort}</a>
-    {volunteerUrl && <a class="join-pill" href={volunteerUrl} target="_blank" rel="noopener">{s.volunteer}</a>}
+    <a class="join-pill" href={routes.volunteer[lang]} aria-current={path === routes.volunteer[lang] ? 'page' : undefined}>{s.volunteer}</a>
 
     <details class="nav-mobile">
       <summary aria-label={s.openMenu}>

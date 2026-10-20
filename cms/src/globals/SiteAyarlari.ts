@@ -55,11 +55,36 @@ export const SiteAyarlari: GlobalConfig = {
           ],
         },
         {
+          label: 'Gönüllülük',
+          description: 'Sitedeki "Gönüllü ol" sayfası. Başvurular kapalıyken ziyaretçiler Instagram\'a yönlendirilir.',
+          fields: [
+            {
+              name: 'volunteerOpen',
+              label: 'Başvurular açık',
+              type: 'checkbox',
+              defaultValue: false,
+              admin: { description: 'Yeni dönem başvuruları açıldığında işaretleyin, kapandığında kaldırın.' },
+            },
+            {
+              name: 'volunteerUrl',
+              label: 'Başvuru formu bağlantısı',
+              type: 'text',
+              admin: { description: 'Başvurular açıkken "Başvur" düğmesi bu adrese gider. Örn: Google Form bağlantısı' },
+            },
+            {
+              name: 'volunteerNote',
+              localized: true,
+              label: 'Kısa not',
+              type: 'textarea',
+              admin: { description: 'İsteğe bağlı. Örn: "Son başvuru: 15 Kasım. 8 şehirde gönüllü arıyoruz."' },
+            },
+          ],
+        },
+        {
           label: 'İletişim',
           fields: [
             { name: 'email', label: 'E-posta', type: 'email' },
             { name: 'address', label: 'Adres', type: 'text' },
-            { name: 'volunteerUrl', label: 'Gönüllü ol bağlantısı', type: 'text' },
             {
               name: 'social',
               label: 'Sosyal medya',

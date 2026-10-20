@@ -29,7 +29,7 @@ const year = new Date().getFullYear();
         <li><a href={routes.belgeler[lang]}>{s.nav.belgeler}</a></li>
         <li><a href={routes.blog[lang]}>{s.nav.blog}</a></li>
         <li><a href={routes.duyurular[lang]}>{s.nav.duyurular}</a></li>
-        {settings.volunteerUrl && <li><a href={settings.volunteerUrl} target="_blank" rel="noopener">{s.volunteer}</a></li>}
+        <li><a href={routes.volunteer[lang]}>{s.volunteer}</a></li>
         {settings.social.map((s) => (
           <li><a href={s.url} target="_blank" rel="noopener">{s.platform}</a></li>
         ))}

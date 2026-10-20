@@ -676,9 +676,20 @@ export interface SiteAyarlari {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Yeni dönem başvuruları açıldığında işaretleyin, kapandığında kaldırın.
+   */
+  volunteerOpen?: boolean | null;
+  /**
+   * Başvurular açıkken "Başvur" düğmesi bu adrese gider. Örn: Google Form bağlantısı
+   */
+  volunteerUrl?: string | null;
+  /**
+   * İsteğe bağlı. Örn: "Son başvuru: 15 Kasım. 8 şehirde gönüllü arıyoruz."
+   */
+  volunteerNote?: string | null;
   email?: string | null;
   address?: string | null;
-  volunteerUrl?: string | null;
   social?:
     | {
         platform: 'Instagram' | 'X' | 'YouTube' | 'LinkedIn' | 'Facebook' | 'TikTok';
@@ -717,9 +728,11 @@ export interface SiteAyarlariSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  volunteerOpen?: T;
+  volunteerUrl?: T;
+  volunteerNote?: T;
   email?: T;
   address?: T;
-  volunteerUrl?: T;
   social?:
     | T
     | {

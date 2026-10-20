@@ -36,6 +36,7 @@ Site Türkçe (`/`) ve İngilizce (`/en`, `/en/documents`, `/en/news`, `/en/blog
 - **Dönemler:** açıklama, şehirler, faaliyet kartları, öne çıkan çıktı
 - **Görseller:** tüm fotoğraflar (otomatik webp ve boyutlandırma)
 - **Site Ayarları:** slogan, giriş fotoğrafları, sayaçlar, hakkımızda, iletişim
+  - **Gönüllülük** sekmesi: "Başvurular açık" kutucuğu, başvuru formu bağlantısı, kısa not. Kapalıyken `/gonullu-ol` sayfası Instagram'a yönlendirir.
 - **Kullanıcılar:** yalnızca Yönetici rolü görür; kullanıcı ekler/siler. Editör sadece içerik girer.
 
 ## Yerelde çalıştırma (Node 24)

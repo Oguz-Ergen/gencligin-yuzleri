@@ -216,9 +216,7 @@ const tilt = (i: number) => `${[-3, 2.5, -1.5, 3, -2.5][i % 5]}deg`;
       <h2 class="visually-hidden">{s.join.chant}</h2>
       <p>{s.join.text}</p>
       <div class="join-actions">
-        {settings.volunteerUrl && (
-          <a class="btn" href={settings.volunteerUrl} target="_blank" rel="noopener">{s.volunteer}</a>
-        )}
+        <a class="btn" href={routes.volunteer[lang]}>{s.volunteer}</a>
         {settings.email && <a class="btn btn--line" href={`mailto:${settings.email}`}>{settings.email}</a>}
       </div>
     </div>

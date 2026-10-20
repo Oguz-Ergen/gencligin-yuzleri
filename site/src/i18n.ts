@@ -8,6 +8,7 @@ export const routes = {
   belgeler: { tr: '/belgeler', en: '/en/documents' },
   duyurular: { tr: '/duyurular', en: '/en/news' },
   blog: { tr: '/blog', en: '/en/blog' },
+  volunteer: { tr: '/gonullu-ol', en: '/en/volunteer' },
 } as const;
 
 export const duyuruPath = (lang: Lang, slug: string) => `${routes.duyurular[lang]}/${slug}`;
@@ -55,6 +56,17 @@ export const t = {
       intro: 'Forumlar, etkinlikler, çağrılar ve gençleri ilgilendiren haberler.',
       empty: 'Şu an yayında duyuru yok. Yeni forum ve etkinliklerden haberdar olmak için',
       emptyLink: 'bizi takip et',
+    },
+    volunteerPage: {
+      title: 'Gönüllü ol',
+      description: 'Gençliğin Yüzleri gönüllüsü ol: başvurular dönem dönem açılıyor.',
+      intro: 'Gönüllülerimiz kendi şehirlerinde forumlarda gençlerle birlikte politika önerileri geliştiriyor; her şehirden temsilcilerle Ulusal Gençlik Yürütme Kurulu\'nu oluşturuyor.',
+      closedTag: 'Başvurular şu an kapalı',
+      closedText: 'Gönüllü alımı dönem dönem açılıyor. Yeni dönem başladığında Instagram\'dan duyuruyoruz; haberdar olmak için bizi takip et.',
+      openTag: 'Başvurular açık!',
+      openText: 'Yeni dönem gönüllü başvuruları başladı. Formu doldur, seninle iletişime geçelim.',
+      apply: 'Başvuru formunu aç',
+      follow: 'Instagram\'da takip et',
     },
     blog: {
       title: 'Blog',
@@ -116,6 +128,17 @@ export const t = {
       intro: 'Forums, events, open calls and news that matter to young people.',
       empty: 'There is no news right now. To hear about new forums and events,',
       emptyLink: 'follow us on Instagram',
+    },
+    volunteerPage: {
+      title: 'Volunteer',
+      description: 'Volunteer with Gençliğin Yüzleri: applications open once per period.',
+      intro: 'Our volunteers develop policy proposals with young people at forums in their own cities, and representatives from each city form the National Youth Executive Board.',
+      closedTag: 'Applications are closed right now',
+      closedText: 'We recruit volunteers once per period. We announce each new round on Instagram, so follow us to hear when it opens.',
+      openTag: 'Applications are open!',
+      openText: 'Volunteer applications for the new period have started. Fill in the form and we will get in touch.',
+      apply: 'Open the application form',
+      follow: 'Follow us on Instagram',
     },
     blog: {
       title: 'Blog',

@@ -1,0 +1,98 @@
+---
+import Base from '../layouts/Base.astro';
+import { getSettings } from '../lib/content';
+import { t, routes, defaultInstagram, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const s = t[lang].volunteerPage;
+const settings = await getSettings(lang);
+const instagram = settings.social.find((x) => x.platform === 'Instagram')?.url ?? defaultInstagram;
+// Başvurular yalnızca panelde "açık" işaretliyse ve form bağlantısı varsa açık görünür.
+const open = settings.volunteerOpen && Boolean(settings.volunteerUrl);
+const photo = settings.heroImages[1] ?? settings.heroImages[0];
+---
+
+<Base title={s.title} description={s.description} paths={{ tr: routes.volunteer.tr, en: routes.volunteer.en }}>
+  <header class="page-head vol-head">
+    <div class="wrap">
+      <h1>{s.title}</h1>
+      <p>{s.intro}</p>
+    </div>
+  </header>
+
+  <section class="page-body">
+    <div class="wrap status-grid">
+      <div class:list={['status', { open }]}>
+        <p class="tag">{open ? s.openTag : s.closedTag}</p>
+        <p class="text">{open ? s.openText : s.closedText}</p>
+        {open && settings.volunteerNote && <p class="note">{settings.volunteerNote}</p>}
+        <div class="actions">
+          {open ? (
+            <>
+              <a class="btn btn--fire" href={settings.volunteerUrl} target="_blank" rel="noopener">{s.apply}</a>
+              <a class="btn btn--line" href={instagram} target="_blank" rel="noopener">{s.follow}</a>
+            </>
+          ) : (
+            <a class="btn btn--fire" href={instagram} target="_blank" rel="noopener">{s.follow}</a>
+          )}
+        </div>
+      </div>
+      {photo && <img class="sticker" src={photo.url(900)} alt={photo.alt} loading="lazy" />}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .vol-head { background: var(--mint); color: var(--ink); }
+  .vol-head p { color: var(--ink); }
+
+  .status-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: clamp(32px, 6vw, 80px);
+    align-items: center;
+  }
+  .status {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 40px 40px 40px 8px;
+    padding: clamp(30px, 5vw, 60px);
+  }
+  .tag {
+    display: inline-block;
+    background: #fff;
+    color: var(--ink);
+    font-weight: 800;
+    font-stretch: 80%;
+    text-transform: uppercase;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    padding: 6px 16px 7px;
+    border-radius: 16px 16px 16px 4px;
+    transform: rotate(-3deg);
+    margin: 0 0 22px;
+  }
+  .open .tag { background: var(--fire); animation: wiggle 1.6s ease-in-out infinite; }
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-3deg) scale(1); }
+    50% { transform: rotate(2deg) scale(1.06); }
+  }
+  .text { font-size: clamp(1.25rem, 2.2vw, 1.7rem); line-height: 1.35; font-weight: 550; max-width: 32ch; }
+  .note { color: #d3d9f5; font-size: 1.1rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .status .btn--line { color: #fff; }
+
+  .sticker {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border: 8px solid #fff;
+    border-radius: 8px;
+    box-shadow: 0 20px 44px rgb(14 20 64 / 0.22);
+    transform: rotate(4deg);
+  }
+  @media (max-width: 860px) {
+    .status-grid { grid-template-columns: 1fr; }
+    .sticker { max-width: 420px; justify-self: center; }
+  }
+</style>

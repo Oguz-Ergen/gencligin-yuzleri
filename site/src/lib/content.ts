@@ -15,6 +15,8 @@ export type Settings = {
   aboutImages: Img[];
   stats: Stat[];
   volunteerUrl?: string;
+  volunteerOpen: boolean;
+  volunteerNote?: string;
   email?: string;
   address?: string;
   social: Social[];
@@ -104,7 +106,7 @@ const paragraphs = (text?: string) =>
 export async function getSettings(lang: Lang = 'tr'): Promise<Settings> {
   if (!cmsUrl) {
     const s = seed.settings;
-    return { ...s, heroImages: s.heroImages.map(localImg), aboutImages: s.aboutImages.map(localImg) };
+    return { ...s, volunteerOpen: false, heroImages: s.heroImages.map(localImg), aboutImages: s.aboutImages.map(localImg) };
   }
   const s = await api(`/api/globals/site-ayarlari?depth=1&locale=${lang}`);
   const imgs = (list: any[] = []) => list.map((i) => cmsImg(i.image)).filter((i): i is Img => Boolean(i));
@@ -117,6 +119,8 @@ export async function getSettings(lang: Lang = 'tr'): Promise<Settings> {
     aboutImages: imgs(s.aboutImages),
     stats: (s.stats ?? []).map(({ value, label }: Stat) => ({ value, label })),
     volunteerUrl: s.volunteerUrl || undefined,
+    volunteerOpen: Boolean(s.volunteerOpen),
+    volunteerNote: s.volunteerNote || undefined,
     email: s.email || undefined,
     address: s.address || undefined,
     social: (s.social ?? []).map(({ platform, url }: Social) => ({ platform, url })),
