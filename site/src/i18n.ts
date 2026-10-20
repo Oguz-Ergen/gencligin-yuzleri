@@ -54,7 +54,7 @@ export const t = {
       description: 'Gençliğin Yüzleri etkinlik, çağrı ve haberleri.',
       intro: 'Forumlar, etkinlikler, çağrılar ve gençleri ilgilendiren haberler.',
       empty: 'Şu an yayında duyuru yok. Yeni forum ve etkinliklerden haberdar olmak için',
-      emptyLink: 'bize yaz',
+      emptyLink: 'bizi takip et',
     },
     blog: {
       title: 'Blog',
@@ -115,7 +115,7 @@ export const t = {
       description: 'Events, calls and news from Gençliğin Yüzleri.',
       intro: 'Forums, events, open calls and news that matter to young people.',
       empty: 'There is no news right now. To hear about new forums and events,',
-      emptyLink: 'write to us',
+      emptyLink: 'follow us on Instagram',
     },
     blog: {
       title: 'Blog',
@@ -153,5 +153,8 @@ const categoriesEn: Record<string, string> = {
   Basın: 'Press',
 };
 export const categoryLabel = (lang: Lang, c?: string) => (c && lang === 'en' ? categoriesEn[c] ?? c : c);
+
+/** Panelde Instagram adresi girilmemişse kullanılan hesap. */
+export const defaultInstagram = 'https://www.instagram.com/gencliginyuzleri/';
 
 export const langFromPath = (path: string): Lang => (path === '/en' || path.startsWith('/en/') ? 'en' : 'tr');

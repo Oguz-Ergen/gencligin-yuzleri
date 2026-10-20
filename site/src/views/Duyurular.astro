@@ -1,13 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
 import DuyuruCard from '../components/DuyuruCard.astro';
-import { getDuyurular } from '../lib/content';
-import { t, routes, anchor, type Lang } from '../i18n';
+import { getDuyurular, getSettings } from '../lib/content';
+import { t, routes, defaultInstagram, type Lang } from '../i18n';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const s = t[lang];
-const duyurular = await getDuyurular(lang);
+const [duyurular, settings] = await Promise.all([getDuyurular(lang), getSettings(lang)]);
+const instagram = settings.social.find((x) => x.platform === 'Instagram')?.url ?? defaultInstagram;
 ---
 
 <Base title={s.duyurularPage.title} description={s.duyurularPage.description} paths={{ tr: routes.duyurular.tr, en: routes.duyurular.en }}>
@@ -20,7 +21,7 @@ const duyurular = await getDuyurular(lang);
   <section class="page-body">
     <div class="wrap">
       {duyurular.length === 0 ? (
-        <p class="empty">{s.duyurularPage.empty} <a href={anchor(lang, 'contact')}>{s.duyurularPage.emptyLink}</a>.</p>
+        <p class="empty">{s.duyurularPage.empty} <a href={instagram} target="_blank" rel="noopener">{s.duyurularPage.emptyLink}</a>.</p>
       ) : (
         <div class="grid">{duyurular.map((d) => <DuyuruCard duyuru={d} lang={lang} />)}</div>
       )}
