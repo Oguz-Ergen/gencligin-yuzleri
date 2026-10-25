@@ -29,7 +29,7 @@ const s = t[lang].blog;
   .post { position: relative; display: flex; flex-direction: column; gap: 18px; }
   .media {
     position: relative;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9;
     border-radius: 22px 22px 22px 6px;
     overflow: hidden;
     background: var(--tint);
@@ -57,27 +57,26 @@ const s = t[lang].blog;
   .excerpt { color: var(--ink-soft); margin-bottom: 10px; }
   .meta { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.92rem; color: var(--ink-soft); margin: 0; }
 
-  /* Öne çıkan yazı: görsel ve renkli metin bloğu yan yana */
-  .featured {
-    display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-    gap: 0;
-    align-items: stretch;
-  }
-  .featured .media { aspect-ratio: auto; min-height: 380px; border-radius: 34px 0 0 8px; }
+  /* Öne çıkan yazı: kapak kendi oranında ve kırpılmadan üstte, altında renkli metin bloğu.
+     Kapaklar çoğu zaman üzerinde yazı olan 16:9 görseller; kırpılmaları başlığı keser. */
+  .featured { gap: 0; }
+  .featured .media { aspect-ratio: 16 / 9; border-radius: 34px 34px 0 0; }
   .featured:hover .media { transform: none; }
   .featured .media:has(.noimg) { background: var(--blue); }
   .featured .noimg { color: #fff; font-size: 9rem; }
   .featured .text {
     background: var(--tint);
     color: var(--ink);
-    padding: clamp(28px, 4vw, 52px);
-    border-radius: 0 34px 34px 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    padding: clamp(26px, 4vw, 48px);
+    border-radius: 0 0 34px 8px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 14px clamp(24px, 4vw, 56px);
+    align-items: end;
   }
   .featured h3 {
+    grid-row: span 2;
+    margin: 0;
     font-size: clamp(2.2rem, 4.6vw, 4rem);
     font-weight: 800;
     font-stretch: 75%;
@@ -86,10 +85,10 @@ const s = t[lang].blog;
     letter-spacing: -0.01em;
   }
   .featured .excerpt, .featured .meta { color: var(--ink); }
-  .featured .excerpt { font-size: 1.12rem; }
+  .featured .excerpt { font-size: 1.12rem; margin: 0; }
   @media (max-width: 860px) {
-    .featured { grid-template-columns: 1fr; }
-    .featured .media { min-height: 0; aspect-ratio: 16 / 10; border-radius: 26px 26px 0 0; }
-    .featured .text { border-radius: 0 0 26px 6px; }
+    .featured .media { border-radius: 26px 26px 0 0; }
+    .featured .text { grid-template-columns: 1fr; border-radius: 0 0 26px 6px; }
+    .featured h3 { grid-row: auto; }
   }
 </style>
