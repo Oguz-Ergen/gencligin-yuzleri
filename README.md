@@ -12,9 +12,15 @@ Her şey Google Cloud projesi `gencligin-yuzleri` içinde, bölge `europe-west1`
 - **Gizli bilgiler:** Secret Manager → `cms-database-url`, `cms-payload-secret`
 - **Panel servis hesabı:** `gy-cms@gencligin-yuzleri.iam.gserviceaccount.com`
 
-Geçici adresler:
-- Site: https://gencligin-yuzleri-145244747694.europe-west1.run.app
-- Panel: https://gencligin-yuzleri-panel-145244747694.europe-west1.run.app/admin
+Adresler:
+- Site: https://gencliginyuzleri.org (www de açılır)
+- Panel: https://panel.gencliginyuzleri.org/admin
+- Cloud Run'ın kendi adresleri de çalışmaya devam eder (site, panele bu adresten bağlanır):
+  - https://gencligin-yuzleri-145244747694.europe-west1.run.app
+  - https://gencligin-yuzleri-panel-145244747694.europe-west1.run.app
+
+DNS hosting.com.tr'de. Kök alan adı Google'ın A/AAAA adreslerine, `www` ve `panel` CNAME ile
+`ghs.googlehosted.com`'a gider. E-posta kayıtları (`mail`, MX, SPF, DKIM, DMARC) eski sunucuda kalır.
 
 Site içeriği panelin REST API'sinden okur (60 sn önbellek). Panelde "Yayınla" denen
 içerik en geç bir dakikada sitede görünür. `CMS_URL` tanımlı değilse site
